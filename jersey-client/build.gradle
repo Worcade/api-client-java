@@ -1,0 +1,31 @@
+// Copyright (c) 2017, Worcade. Please see the AUTHORS file for details.
+// All rights reserved. Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
+apply plugin: 'com.github.johnrengelman.shadow'
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.16.18'
+
+    compile project(':api')
+
+    // For some reason, this doesn't work as shadow dependency (while it does work in :api)
+    compile 'org.slf4j:slf4j-api:1.7.25'
+    shadow 'javax.ws.rs:javax.ws.rs-api:2.1'
+    shadow 'org.glassfish.jersey.core:jersey-client:2.26'
+    shadow 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.9.1'
+}
+
+shadowJar {
+    group = 'net.worcade.client'
+    baseName = 'api-client-java-jersey'
+    version = '1.0.0-SNAPSHOT'
+    classifier = ''
+
+    relocate 'com.google', 'net.worcade.repackaged.com.google'
+    dependencies {
+        exclude dependency('com.google.guava::')
+        exclude dependency('org.slf4j::')
+        exclude project(':api')
+    }
+}

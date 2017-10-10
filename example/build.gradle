@@ -1,0 +1,14 @@
+// Copyright (c) 2017, Worcade. Please see the AUTHORS file for details.
+// All rights reserved. Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.16.18'
+
+    compile project(':jersey-client')
+
+    runtime 'org.glassfish.jersey.core:jersey-client:2.26'
+    runtime 'org.glassfish.jersey.inject:jersey-hk2:2.26'
+    runtime 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.9.1'
+    runtime 'org.slf4j:slf4j-log4j12:1.7.25'
+}
