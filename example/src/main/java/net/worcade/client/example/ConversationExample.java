@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 
 @Slf4j
 public class ConversationExample {
-    public static final String DEFAULT_SERVER = "http://localhost:8080";
+    public static final String DEFAULT_SERVER = "https://demo.worcade.net";
     public static final String API_KEY = "faa8c6cc-2bf3-4f21-95c8-9882177ef2ff";
 
     public static void main(String[] args) {
