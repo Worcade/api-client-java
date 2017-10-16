@@ -13,6 +13,12 @@ An implementation using Jersey Client and Jackson is available in the `jersey-cl
 but it should be possible to substitute other implementations.
 To do so, implement the `WorcadeClientBuilder` interface and return a subclass of `WorcadeClient`.
 
+To run with the Jersey client, use these dependencies:
+```
+compile 'net.worcade:api-client:1.0.0'
+runtime 'net.worcade:api-client-jersey:1.0.0'
+```
+
 ## License and contributors
 * The MIT License, see [LICENSE](https://github.com/Worcade/api-client-java/raw/master/LICENSE).
 * For contributors, see [AUTHORS](https://github.com/Worcade/api-client-java/raw/master/AUTHORS).

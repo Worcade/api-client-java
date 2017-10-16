@@ -12,7 +12,6 @@ import net.worcade.client.get.WebhookTestResult;
 import net.worcade.client.query.Query;
 import net.worcade.client.query.WebhookField;
 
-import javax.ws.rs.core.Response;
 import java.util.Collection;
 
 public interface WebhookApi {
@@ -28,7 +27,6 @@ public interface WebhookApi {
 
     /**
      * @param id The id of the webhook to test
-     * @return The {@link Response}, exactly as the webhook endpoint returned it to Worcade
      */
     Result<? extends WebhookTestResult> requestTest(String id);
 }

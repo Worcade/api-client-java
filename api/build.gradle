@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'maven'
 
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.16.18'
@@ -25,16 +26,23 @@ task javadocJar(type: Jar) {
 
 javadoc {
     options.with {
-        linksOffline 'https://docs.oracle.com/javase/8/docs/api/', 'gradle/javadocs/jdk'
+        links 'https://docs.oracle.com/javase/8/docs/api/'
     }
 }
 
 shadowJar {
-    group = 'net.worcade.client'
-    baseName = 'api-client-java'
-    version = '1.0.0-SNAPSHOT'
+    baseName = 'api-client'
     classifier = ''
 
     relocate 'com.google', 'net.worcade.repackaged.com.google'
 }
 
+uploadShadow {
+    repositories {
+        mavenDeployer {
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
+                authentication(userName: ossrhUser, password: ossrhPassword)
+            }
+        }
+    }
+}

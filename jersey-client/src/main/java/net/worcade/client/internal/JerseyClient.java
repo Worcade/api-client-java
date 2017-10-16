@@ -31,11 +31,11 @@ import java.util.List;
 import static com.google.common.base.Preconditions.*;
 
 @Slf4j @ToString
-public class JerseyClient extends WorcadeClient {
+class JerseyClient extends WorcadeClient {
     private static final GenericType<Envelope> ENVELOPE_TYPE = new GenericType<Envelope>() {};
 
     @Accessors(fluent = true, chain = true)
-    public static class JerseyClientBuilder implements WorcadeBuilder {
+    static class JerseyClientBuilder implements WorcadeBuilder {
         @Setter private String baseUrl = "https://worcade.net";
         @Setter private String apiKey;
         private boolean enableETagCache = true;
