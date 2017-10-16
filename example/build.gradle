@@ -5,10 +5,11 @@
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.16.18'
 
-    compile project(':jersey-client')
+    compile project(':api')
+    runtime project(':jersey-client')
 
     runtime 'org.glassfish.jersey.core:jersey-client:2.26'
     runtime 'org.glassfish.jersey.inject:jersey-hk2:2.26'
     runtime 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.9.1'
-    runtime 'org.slf4j:slf4j-log4j12:1.7.25'
+    compile 'org.slf4j:slf4j-log4j12:1.7.25'
 }

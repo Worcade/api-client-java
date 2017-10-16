@@ -27,7 +27,7 @@ import net.worcade.client.api.WorkOrderApi;
 import net.worcade.client.create.WebhookCreate;
 import net.worcade.client.create.WorkOrderCreate;
 import net.worcade.client.get.Asset;
-import net.worcade.client.get.AttachmentData;
+import net.worcade.client.get.BinaryData;
 import net.worcade.client.get.Contact;
 import net.worcade.client.get.Conversation;
 import net.worcade.client.get.ExternalNumber;
@@ -66,10 +66,6 @@ import net.worcade.client.query.SearchQuery;
 import net.worcade.client.query.SiteField;
 import net.worcade.client.query.WebhookField;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.PublicKey;
@@ -407,21 +403,15 @@ class WorcadeApi implements ApplicationApi, AssetApi, AttachmentApi, CompanyApi,
     }
 
     @Override
-    public Result<AttachmentData> getData(String id) {
-        Response response = worcadeClient.getCustom(entityUrl + "/" + WorcadeClient.checkId(id) + "/data");
-        if (response.getStatus() == 429) {
-            return Result.failed(ImmutableList.of(new Result.Message(null, "Too many requests")));
-        }
-        return Result.ok(new AttachmentData(response.getHeaderString(HttpHeaders.CONTENT_DISPOSITION),
-                (InputStream) response.getEntity(), response.getMediaType()));
+    public Result<BinaryData> getData(String id) {
+        return worcadeClient.getBinary(entityUrl + "/" + WorcadeClient.checkId(id) + "/data");
     }
 
     @Override
-    public Result<? extends Reference> create(String name, InputStream data, MediaType contentType) {
+    public Result<? extends Reference> create(String name, InputStream data, String contentType) {
         checkArgument(!Strings.isNullOrEmpty(name), "Name is mandatory");
         String url = entityUrl + "?name=" + Util.escapeUrlQueryParameter(name);
-        return worcadeClient.handle("POST", url, worcadeClient.postCustom(url, Entity.entity(data, contentType)))
-                .map(WorcadeClient.DTO_FUNCTION);
+        return worcadeClient.postBinary(url, data, contentType);
     }
 
     @Override

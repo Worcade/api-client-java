@@ -15,7 +15,6 @@ dependencies {
         exclude group: 'org.codehaus.mojo', module: 'animal-sniffer-annotations'
     }
 
-    shadow 'javax.ws.rs:javax.ws.rs-api:2.1'
     shadow 'org.slf4j:slf4j-api:1.7.25'
 }
 

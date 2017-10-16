@@ -6,12 +6,11 @@ package net.worcade.client.get;
 
 import lombok.Value;
 
-import javax.ws.rs.core.MediaType;
 import java.io.InputStream;
 
 @Value
-public class AttachmentData {
+public class BinaryData {
     private final String fileName;
     private final InputStream data;
-    private final MediaType mimeType;
+    private final String mimeType;
 }

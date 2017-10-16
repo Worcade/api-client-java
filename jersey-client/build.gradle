@@ -10,7 +10,7 @@ dependencies {
 
     compile project(':api')
 
-    // For some reason, this doesn't work as shadow dependency (while it does work in :api)
+    // For some reason, this doesn't work as shadow dependency (but it does work in :api)
     compile 'org.slf4j:slf4j-api:1.7.25'
     shadow 'javax.ws.rs:javax.ws.rs-api:2.1'
     shadow 'org.glassfish.jersey.core:jersey-client:2.26'

@@ -4,10 +4,8 @@
 
 package net.worcade.client.get;
 
-import javax.ws.rs.core.MediaType;
-
 public interface Attachment extends Entity, ReferenceWithName {
-    MediaType getMimeType();
+    String getMimeType();
     int getSize();
     Integer getHeight();
     Integer getWidth();

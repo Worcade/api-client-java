@@ -15,6 +15,7 @@ import net.worcade.client.ErrorCode;
 import net.worcade.client.Result;
 import net.worcade.client.Worcade;
 import net.worcade.client.WorcadeBuilder;
+import net.worcade.client.get.BinaryData;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.logging.LoggingFeature;
 
@@ -24,8 +25,10 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.InputStream;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.*;
@@ -35,7 +38,7 @@ class JerseyClient extends WorcadeClient {
     private static final GenericType<Envelope> ENVELOPE_TYPE = new GenericType<Envelope>() {};
 
     @Accessors(fluent = true, chain = true)
-    static class JerseyClientBuilder implements WorcadeBuilder {
+    public static class JerseyClientBuilder implements WorcadeBuilder {
         @Setter private String baseUrl = "https://worcade.net";
         @Setter private String apiKey;
         private boolean enableETagCache = true;
@@ -85,10 +88,15 @@ class JerseyClient extends WorcadeClient {
     }
 
     @Override
-    protected Response getCustom(String url, Header... additionalHeader) {
+    protected Result<BinaryData> getBinary(String url, Header... additionalHeader) {
         Response response = target(getBaseUrl() + url, additionalHeader).get();
         log.debug("GET request to {} returned with status {}", getBaseUrl() + url, response.getStatus());
-        return response;
+
+        if (response.getStatus() == 429) {
+            return Result.failed(ImmutableList.of(new Result.Message(null, "Too many requests")));
+        }
+        return Result.ok(new BinaryData(response.getHeaderString(HttpHeaders.CONTENT_DISPOSITION),
+                (InputStream) response.getEntity(), response.getMediaType().toString()));
     }
 
     @Override
@@ -99,8 +107,8 @@ class JerseyClient extends WorcadeClient {
     }
 
     @Override
-    protected Response postCustom(String url, Entity<?> data, Header... additionalHeader) {
-        return target(getBaseUrl() + url, additionalHeader).post(data);
+    protected Result<IncomingDto> postBinary(String url, InputStream data, String contentType, Header... additionalHeader) {
+        return post(getBaseUrl() + url, Entity.entity(data, contentType), additionalHeader);
     }
 
     @Override
@@ -125,8 +133,7 @@ class JerseyClient extends WorcadeClient {
         return handle("DELETE", url, response).map(JerseyClient.DTO_FUNCTION);
     }
 
-    @Override
-    protected Result<Object> handle(String method, String url, Response response) {
+    private Result<Object> handle(String method, String url, Response response) {
         if (response.getStatus() == 429) {
             return Result.failed(ImmutableList.of(new Result.Message(null, "Too many requests")));
         }

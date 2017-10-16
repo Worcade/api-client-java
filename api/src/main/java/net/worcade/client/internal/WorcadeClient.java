@@ -5,6 +5,7 @@
 package net.worcade.client.internal;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.net.HttpHeaders;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ import net.worcade.client.api.WebhookApi;
 import net.worcade.client.api.WorkOrderApi;
 import net.worcade.client.exception.IncompatibleVersionException;
 import net.worcade.client.exception.InvalidIdException;
+import net.worcade.client.get.BinaryData;
 import net.worcade.client.get.ExternalNumber;
 import net.worcade.client.get.Notification;
 import net.worcade.client.get.Reference;
@@ -35,9 +37,7 @@ import net.worcade.client.get.RemoteId;
 import net.worcade.client.get.Webhook;
 import net.worcade.client.get.WorkOrder;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
+import java.io.InputStream;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.time.Duration;
@@ -217,11 +217,10 @@ public abstract class WorcadeClient implements Worcade {
 
     protected abstract Result<IncomingDto> get(String url, Header... additionalHeader);
     protected abstract Result<List<IncomingDto>> getList(String url, Header... additionalHeader);
-    protected abstract Response getCustom(String url, Header... additionalHeader);
+    protected abstract Result<BinaryData> getBinary(String url, Header... additionalHeader);
     protected abstract Result<IncomingDto> post(String url, Object data, Header... additionalHeader);
-    protected abstract Response postCustom(String url, Entity<?> data, Header... additionalHeader);
+    protected abstract Result<IncomingDto> postBinary(String url, InputStream data, String contentType, Header... additionalHeader);
     protected abstract Result<IncomingDto> put(String url, Object data, Header... additionalHeader);
     protected abstract Result<IncomingDto> delete(String url, Header... additionalHeader);
     protected abstract Result<IncomingDto> delete(String url, Object data, Header... additionalHeader);
-    protected abstract Result<Object> handle(String method, String url, Response response);
 }

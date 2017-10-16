@@ -35,7 +35,6 @@ import net.worcade.client.get.Webhook;
 import net.worcade.client.get.WebhookTestResult;
 import net.worcade.client.get.WorkOrder;
 
-import javax.ws.rs.core.MediaType;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -457,8 +456,8 @@ class IncomingDto implements ApplicationProfile, Asset, Attachment, Company, Con
     }
 
     @Override
-    public MediaType getMimeType() {
-        return MediaType.valueOf(getString("mimeType"));
+    public String getMimeType() {
+        return getString("mimeType");
     }
 
     @Override
