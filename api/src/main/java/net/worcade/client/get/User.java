@@ -8,6 +8,7 @@ import java.util.Locale;
 
 public interface User extends Entity, ReferenceWithName {
     Locale getLocale();
+    ReferenceWithName getCompany();
     ReferenceWithName getLocation();
     ReferenceWithName getPicture();
 }

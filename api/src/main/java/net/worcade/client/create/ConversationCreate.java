@@ -9,12 +9,15 @@ import net.worcade.client.get.Reference;
 import net.worcade.client.get.RemoteId;
 import net.worcade.client.modify.ConversationModification;
 
+import java.util.Collection;
+
 public interface ConversationCreate extends ConversationModification {
     @Override ConversationCreate name(String name);
-    ConversationCreate externalNumbers(ExternalNumber... numbers);
     @Override ConversationCreate assignee(Reference assignee);
     @Override ConversationCreate reporter(Reference reporter);
-    @Override ConversationCreate testMode(boolean testMode);
+    ConversationCreate testMode(boolean testMode);
+    ConversationCreate externalNumbers(ExternalNumber... numbers);
     ConversationCreate watchers(Reference... watchers);
+    ConversationCreate watchers(Collection<? extends Reference> watchers);
     ConversationCreate remoteIds(RemoteId... remoteIds);
 }

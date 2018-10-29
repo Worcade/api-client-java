@@ -5,7 +5,6 @@
 package net.worcade.client.query;
 
 public enum ConversationField implements EntityField {
-    type, modified, version, name, number, externalNumbers, assignee, reporter, labels, watchers, /*message,*/
-    lastContent, linkedConversations, archived, closed, testMode, views,
-    created, creator, modifier, owners, remoteIds
+    type, modified, version, name, number, externalNumbers, assignee, reporter, labels, involvedCompanies, watchers,
+    lastContent, linkedConversations, archived, closed, testMode, views, created, creator, modifier, owners, remoteIds
 }

@@ -15,6 +15,7 @@ public interface AssetCreate extends AssetModification {
     @Override AssetCreate model(String model);
     @Override AssetCreate specification(String specification);
     @Override AssetCreate serial(String serial);
+    @Override AssetCreate notes(String notes);
     @Override AssetCreate location(Reference location);
     @Override AssetCreate picture(Reference picture);
     AssetCreate labels(Reference... labels);

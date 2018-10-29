@@ -19,7 +19,6 @@ public interface GroupCreate extends GroupModification {
     @Override GroupCreate autoShareTarget(Reference target);
     GroupCreate members(Reference... members);
     @Override GroupCreate picture(Reference picture);
-    @Override GroupCreate company(Reference company);
     GroupCreate remoteIds(RemoteId... remoteIds);
     @Override GroupCreate visible(boolean visible);
 }

@@ -16,4 +16,5 @@ public interface Company extends Entity, ReferenceWithName {
     ReferenceWithName getPicture();
     ReferenceWithName getLocation();
     Collection<? extends ReferenceWithName> getLabels();
+    boolean hasSaml();
 }

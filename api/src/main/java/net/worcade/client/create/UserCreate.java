@@ -12,6 +12,7 @@ import java.util.Locale;
 
 public interface UserCreate extends UserModification {
     @Override UserCreate name(String name);
+    @Override
     UserCreate email(String email);
     @Override UserCreate locale(Locale locale);
     @Override UserCreate mailImportAddress(String mailImportAddress);
@@ -24,4 +25,5 @@ public interface UserCreate extends UserModification {
     @Override UserCreate subscribeNewsletter(boolean subscribe);
     UserCreate trustedApplications(Reference... applications);
     UserCreate remoteIds(RemoteId... remoteIds);
+    UserCreate company(Reference company);
 }

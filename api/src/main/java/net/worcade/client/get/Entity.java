@@ -8,7 +8,6 @@ import java.time.Instant;
 import java.util.Collection;
 
 public interface Entity extends Reference {
-    boolean isDeleted();
     Collection<? extends RemoteId> getRemoteIds();
     Collection<? extends ReferenceWithName> getOwners();
     Instant created();

@@ -13,6 +13,7 @@ public interface AssetModification extends EntityModification {
     AssetModification model(String model);
     AssetModification serial(String serial);
     AssetModification specification(String specification);
+    AssetModification notes(String notes);
     AssetModification location(Reference location);
     AssetModification picture(Reference picture);
 }

@@ -10,6 +10,7 @@ import java.util.Locale;
 
 public interface UserModification extends EntityModification {
     UserModification name(String name);
+    UserModification email(String email);
     UserModification locale(Locale locale);
     UserModification mailImportAddress(String mailImportAddress);
     UserModification password(String password);
@@ -19,4 +20,5 @@ public interface UserModification extends EntityModification {
     UserModification suppressUpdateNotifications(boolean suppress);
     UserModification subscribeGettingStarted(boolean subscribe);
     UserModification subscribeNewsletter(boolean subscribe);
+    UserModification samlNameId(String nameId);
 }

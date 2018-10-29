@@ -9,12 +9,18 @@ import net.worcade.client.modify.ConversationModification;
 import java.time.Instant;
 import java.util.Collection;
 
-public interface Conversation extends Entity, ReferenceWithName, ReferenceWithNumber {
+public interface Conversation extends Entity, ReferenceWithNumber {
     ConversationModification modify();
 
     Collection<? extends ExternalNumber> getExternalNumbers();
     ReferenceWithName getAssignee();
     ReferenceWithName getReporter();
+    boolean isClosed();
+    Collection<? extends ReferenceWithName> getWatchers();
     Instant getLastContentTimestamp();
     Collection<? extends ConversationContent> getConversationContent();
+    Collection<? extends ConversationEvent> getEvents();
+    Collection<? extends Reference> getLinkedConversations();
+    Collection<? extends View> getViews();
+    Collection<? extends ReferenceWithName> getInvolvedCompanies();
 }

@@ -2,39 +2,87 @@
 // All rights reserved. Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'maven'
+apply plugin: 'java-library'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.16.18'
+    annotationProcessor 'org.projectlombok:lombok:1.18.2'
+    compileOnly 'org.projectlombok:lombok:1.18.2'
 
-    compile project(':api')
+    annotationProcessor 'com.google.auto.service:auto-service:1.0-rc4'
+    compileOnly 'com.google.auto.service:auto-service:1.0-rc4'
 
-    // For some reason, this doesn't work as shadow dependency (but it does work in :api)
-    compile 'org.slf4j:slf4j-api:1.7.25'
-    shadow 'javax.ws.rs:javax.ws.rs-api:2.1'
-    shadow 'org.glassfish.jersey.core:jersey-client:2.26'
-    shadow 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.9.1'
+    api project(':api')
+
+    api 'javax.ws.rs:javax.ws.rs-api:2.1.1'
+    api 'org.glassfish.jersey.core:jersey-client:2.26'
+    api 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.9.1'
 }
 
-shadowJar {
-    baseName = 'api-client-jersey'
-    classifier = ''
-
-    relocate 'com.google', 'net.worcade.repackaged.com.google'
-    dependencies {
-        exclude dependency('com.google.guava::')
-        exclude dependency('org.slf4j::')
-        exclude project(':api')
+javadoc {
+    options.with {
+        links 'https://docs.oracle.com/javase/10/docs/api/'
     }
 }
 
-uploadShadow {
-    repositories {
-        mavenDeployer {
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
-                authentication(userName: ossrhUser, password: ossrhPassword)
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allJava
+}
+
+publishing {
+    publications {
+        jerseyClient(MavenPublication) {
+            pom {
+                name = 'Worcade API client, Jersey implementation'
+                description = 'A Jersey-based implementation of the the Worcade API client library'
+                url = 'https://worcade.net/doc'
+                licenses {
+                    license {
+                        name = 'MIT license'
+                        url = 'https://raw.githubusercontent.com/Worcade/api-client-java/master/LICENSE'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'worcade'
+                        name = 'Worcade'
+                        email = 'hello@worcade.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/Worcade/api-client-java'
+                    developerConnection = 'scm:git:ssh://github.com/Worcade/api-client-java'
+                    url = 'https://github.com/Worcade/api-client-java'
+                }
             }
+            artifactId = 'api-client-jersey'
+            from components.java
+
+            artifact sourcesJar
+            artifact javadocJar
         }
     }
+    repositories {
+        maven {
+            credentials {
+                username "${ossrhUser}"
+                password "${ossrhPassword}"
+            }
+            def snapshotUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+            def releaseUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            url = version.endsWith('SNAPSHOT') ? snapshotUrl : releaseUrl
+        }
+    }
+}
+
+signing {
+    useGpgCmd()
+    sign publishing.publications.jerseyClient
 }

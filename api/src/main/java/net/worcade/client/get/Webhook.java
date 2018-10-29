@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.util.Collection;
 
 public interface Webhook {
+    String getId();
     String getUrl();
     String getEvent();
     boolean isSuppressOwn();
@@ -32,7 +33,8 @@ public interface Webhook {
         CONVERSATION_CREATE("conversation.new"),
         CONVERSATION_UPDATE("conversation.update");
 
-        @Getter private final String event;
+        @Getter
+        private final String event;
 
         public static Event forName(String name) {
             for (Event event : values()) {

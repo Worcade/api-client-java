@@ -20,10 +20,10 @@ public interface WebhookApi {
     /**
      * Create a new Webhook. Use the {@link #createBuilder()} method for a new, empty template.
      */
-    Result<? extends Reference> create(WebhookCreate subject);
+    Result<? extends Reference> create(String ownerId, WebhookCreate subject);
     Result<?> delete(String id);
     Result<? extends Collection<? extends Webhook>> getWebhookList(Query<WebhookField> query);
-    Result<? extends Collection<? extends Webhook.Log>> getLogs(String id);
+    Result<? extends Collection<? extends Webhook.Log>> getLogs(String id, boolean includeDeleted);
 
     /**
      * @param id The id of the webhook to test

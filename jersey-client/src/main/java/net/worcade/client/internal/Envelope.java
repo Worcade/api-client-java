@@ -10,7 +10,8 @@ import lombok.Data;
 
 import java.util.List;
 
-@Data @AllArgsConstructor
+@Data
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 class Envelope {
     private Object data;

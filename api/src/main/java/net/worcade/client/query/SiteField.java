@@ -5,6 +5,6 @@
 package net.worcade.client.query;
 
 public enum SiteField implements EntityField {
-    type, modified, version, name, addressLineOne, addressLineTwo, postalCode, city, region, country, labels,
-    sharedWith, created, creator, modifier, owners, remoteIds
+    type, modified, version, name, addressLineOne, addressLineTwo, postalCode, city, region, country,
+    involvedCompanies, labels, sharedWith, created, creator, modifier, owners, remoteIds
 }

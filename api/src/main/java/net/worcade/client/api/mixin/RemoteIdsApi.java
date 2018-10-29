@@ -25,11 +25,6 @@ public interface RemoteIdsApi {
      */
     Result<?> addRemoteIds(String id, RemoteId... remoteIds);
     /**
-     * Set the remote ids for the given entity, replacing any existing ones.
-     * Remote id objects can be created using {@link Worcade#createRemoteId(String, String)}
-     */
-    Result<?> setRemoteIds(String id, RemoteId... remoteIds);
-    /**
      * Remove a remote id from the given entity.
      * Remote id objects can be created using {@link Worcade#createRemoteId(String, String)}, or reused from {@link Entity#getRemoteIds()}
      */

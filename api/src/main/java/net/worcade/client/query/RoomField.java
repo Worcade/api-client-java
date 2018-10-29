@@ -5,6 +5,6 @@
 package net.worcade.client.query;
 
 public enum RoomField implements EntityField {
-    type, modified, version, name, floor, roomNumber,
-    labels, sharedWith, created, creator, modifier, owners, remoteIds
+    type, modified, version, name, floor, roomNumber, labels,
+    involvedCompanies, sharedWith, created, creator, modifier, owners, remoteIds
 }

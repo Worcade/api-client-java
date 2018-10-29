@@ -6,6 +6,7 @@ package net.worcade.client.get;
 
 public interface Attachment extends Entity, ReferenceWithName {
     String getMimeType();
+    Boolean isInfected();
     int getSize();
     Integer getHeight();
     Integer getWidth();

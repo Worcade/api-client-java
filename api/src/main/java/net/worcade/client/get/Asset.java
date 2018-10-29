@@ -15,6 +15,11 @@ public interface Asset extends Entity, ReferenceWithName {
     String getAssetMake();
     String getAssetModel();
     String getSerial();
+    String getNotes();
     String getSpecification();
+
+    ReferenceWithName getLocation();
+    ReferenceWithName getPicture();
     Collection<? extends ReferenceWithName> getLabels();
+    Collection<? extends ReferenceWithName> getSharedWith();
 }

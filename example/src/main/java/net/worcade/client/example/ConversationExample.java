@@ -30,16 +30,15 @@ import java.util.logging.Logger;
 @Slf4j
 public class ConversationExample {
     public static final String DEFAULT_SERVER = "https://demo.worcade.net";
-    public static final String API_KEY = "faa8c6cc-2bf3-4f21-95c8-9882177ef2ff";
 
     public static void main(String[] args) {
         turnOffJul();
 
         Worcade client = Worcade.builder()
-                .apiKey(API_KEY)
                 .baseUrl(DEFAULT_SERVER)
                 .disableETagCache()
-                .build();
+                .build()
+                .getResult();
 
         UserApi userApi = client.getUserApi();
         Reference you = userApi.create(userApi.createBuilder().name("You")).getResult();

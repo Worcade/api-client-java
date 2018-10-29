@@ -13,6 +13,8 @@ import java.util.Currency;
 public interface WorkOrder extends Entity, ReferenceWithName {
     WorkOrderModification modify();
 
+    @Override
+    String getName();
     Collection<? extends Row> getRows();
     boolean isApproved();
     boolean isRejected();

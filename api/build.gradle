@@ -2,20 +2,28 @@
 // All rights reserved. Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'maven'
+apply plugin: 'java-library'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.16.18'
+    annotationProcessor 'org.projectlombok:lombok:1.18.2'
+    compileOnly 'org.projectlombok:lombok:1.18.2'
 
-    compile ('com.google.guava:guava:23.0') {
-        exclude group: 'com.google.code.findbugs', module: 'jsr305'
-        exclude group: 'com.google.errorprone', module: 'error_prone_annotations'
+    compileOnly 'javax.ws.rs:javax.ws.rs-api:2.1.1'
+
+    implementation ('com.google.guava:guava:27.0-jre') {
         exclude group: 'com.google.j2objc', module: 'j2objc-annotations'
         exclude group: 'org.codehaus.mojo', module: 'animal-sniffer-annotations'
     }
 
-    shadow 'org.slf4j:slf4j-api:1.7.25'
+    api 'org.slf4j:slf4j-api:1.7.25'
+}
+
+javadoc {
+    options.with {
+        links 'https://docs.oracle.com/javase/10/docs/api/'
+    }
 }
 
 task javadocJar(type: Jar) {
@@ -23,25 +31,58 @@ task javadocJar(type: Jar) {
     from javadoc
 }
 
-javadoc {
-    options.with {
-        links 'https://docs.oracle.com/javase/8/docs/api/'
-    }
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allJava
 }
 
-shadowJar {
-    baseName = 'api-client'
-    classifier = ''
-
-    relocate 'com.google', 'net.worcade.repackaged.com.google'
-}
-
-uploadShadow {
-    repositories {
-        mavenDeployer {
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
-                authentication(userName: ossrhUser, password: ossrhPassword)
+publishing {
+    publications {
+        apiClient(MavenPublication) {
+            pom {
+                name = 'Worcade API client'
+                description = 'A library for interacting with the Worcade API'
+                url = 'https://worcade.net/doc'
+                licenses {
+                    license {
+                        name = 'MIT license'
+                        url = 'https://raw.githubusercontent.com/Worcade/api-client-java/master/LICENSE'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'worcade'
+                        name = 'Worcade'
+                        email = 'hello@worcade.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/Worcade/api-client-java'
+                    developerConnection = 'scm:git:ssh://github.com/Worcade/api-client-java'
+                    url = 'https://github.com/Worcade/api-client-java'
+                }
             }
+            artifactId = 'api-client'
+            from components.java
+
+            artifact sourcesJar
+            artifact javadocJar
         }
     }
+    repositories {
+        maven {
+            credentials {
+                username "${ossrhUser}"
+                password "${ossrhPassword}"
+            }
+            def snapshotUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+            def releaseUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            url = version.endsWith('SNAPSHOT') ? snapshotUrl : releaseUrl
+        }
+    }
+}
+
+signing {
+    useGpgCmd()
+    sign publishing.publications.apiClient
 }

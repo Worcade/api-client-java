@@ -19,10 +19,10 @@ import java.security.NoSuchAlgorithmException;
 public class WebhookExample {
     public static void main(String[] args) throws NoSuchAlgorithmException, InterruptedException {
         Worcade client = Worcade.builder()
-                .apiKey(ConversationExample.API_KEY)
                 .baseUrl(ConversationExample.DEFAULT_SERVER)
                 .disableETagCache()
-                .build();
+                .build()
+                .getResult();
 
         ApplicationProfile app = ApplicationAuth.createAndLoginApplication(client).getResult();
         UserApi userApi = client.getUserApi();
@@ -34,7 +34,7 @@ public class WebhookExample {
 
         WebhookApi webhookApi = client.getWebhookApi();
         // Create a webhook. Update the URL if you want to see the content.
-        Reference hook = webhookApi.create(webhookApi.createBuilder()
+        Reference hook = webhookApi.create(me.getId(), webhookApi.createBuilder()
                 .event(Webhook.Event.CONVERSATION_UPDATE)
                 .suppressOwn(false)
                 .url("https://requestb.in/xtj1bxxt"))
@@ -53,7 +53,7 @@ public class WebhookExample {
         Thread.sleep(1000);
 
         // Get the result
-        log.debug("Logs: {}", webhookApi.getLogs(hook.getId()).getResult());
+        log.debug("Logs: {}", webhookApi.getLogs(hook.getId(), false).getResult());
 
         // Clean up after ourselves
         webhookApi.delete(hook.getId()).getResult();

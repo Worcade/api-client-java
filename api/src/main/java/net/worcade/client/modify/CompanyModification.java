@@ -12,4 +12,5 @@ public interface CompanyModification extends EntityModification {
     CompanyModification url(String url);
     CompanyModification picture(Reference picture);
     CompanyModification location(Reference location);
+    CompanyModification mainGroup(Reference group);
 }

@@ -12,7 +12,9 @@ public interface CompanyCreate extends CompanyModification {
     @Override CompanyCreate name(String name);
     @Override CompanyCreate description(String description);
     @Override CompanyCreate url(String url);
-    @Override CompanyCreate location(Reference location);
     @Override CompanyCreate picture(Reference picture);
+    @Override CompanyCreate location(Reference location);
+    @Override CompanyCreate mainGroup(Reference group);
+    CompanyCreate domains(String... domains);
     CompanyCreate remoteIds(RemoteId... remoteIds);
 }

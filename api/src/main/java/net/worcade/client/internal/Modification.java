@@ -30,6 +30,7 @@ import net.worcade.client.modify.WorkOrderModification;
 import net.worcade.client.modify.WorkOrderRowModification;
 
 import java.time.Duration;
+import java.util.Collection;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
@@ -64,6 +65,9 @@ class Modification implements ApplicationCreate, AssetCreate, CompanyCreate, Con
     private Modification putReferenceList(String key, Reference... references) {
         return put(key, cleanReferences(references));
     }
+    private Modification putReferenceList(String key, Collection<? extends Reference> references) {
+        return put(key, cleanReferences(references));
+    }
 
     private Modification put(String key, Object value) {
         data.put(key, value);
@@ -71,15 +75,19 @@ class Modification implements ApplicationCreate, AssetCreate, CompanyCreate, Con
     }
 
     static Map<String, String> cleanReference(String id) {
-        return ImmutableMap.of("id", WorcadeClient.checkId(id));
+        return id == null ? null : ImmutableMap.of("id", WorcadeClient.checkId(id));
     }
 
     static Map<String, String> cleanReference(Reference reference) {
-        return ImmutableMap.of("id", WorcadeClient.checkId(reference.getId()));
+        return reference == null ? null : ImmutableMap.of("id", WorcadeClient.checkId(reference.getId()));
     }
 
     static List<Map<String, String>> cleanReferences(Reference... references) {
         return Stream.of(references).map(Modification::cleanReference).collect(ImmutableList.toImmutableList());
+    }
+
+    static List<Map<String, String>> cleanReferences(Collection<? extends Reference> references) {
+        return references.stream().map(Modification::cleanReference).collect(ImmutableList.toImmutableList());
     }
 
     static List<Map<String, String>> cleanRemoteIds(RemoteId... remoteIds) {
@@ -287,6 +295,11 @@ class Modification implements ApplicationCreate, AssetCreate, CompanyCreate, Con
     }
 
     @Override
+    public ConversationCreate watchers(Collection<? extends Reference> watchers) {
+        return putReferenceList("watchers", watchers);
+    }
+
+    @Override
     public Modification close() {
         return put("closed", true);
     }
@@ -382,12 +395,32 @@ class Modification implements ApplicationCreate, AssetCreate, CompanyCreate, Con
     }
 
     @Override
-    public WorkOrderRowModification duration(Duration duration) {
+    public Modification duration(Duration duration) {
         return put("duration", duration.getSeconds());
     }
 
     @Override
-    public WorkOrderRowModification cost(double amount, Currency currency) {
+    public Modification cost(double amount, Currency currency) {
         return put("costAmount", amount).put("costCurrency", currency.getCurrencyCode());
+    }
+
+    @Override
+    public Modification mainGroup(Reference group) {
+        return putReference("mainGroup", group);
+    }
+
+    @Override
+    public Modification notes(String notes) {
+        return put("notes", notes);
+    }
+
+    @Override
+    public Modification samlNameId(String nameId) {
+        return put("samlNameId", nameId);
+    }
+
+    @Override
+    public Modification fingerprint(String fingerprint) {
+        return put("fingerprint", fingerprint);
     }
 }

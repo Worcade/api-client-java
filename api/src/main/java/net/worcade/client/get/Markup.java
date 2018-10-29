@@ -4,12 +4,9 @@
 
 package net.worcade.client.get;
 
-import java.time.Instant;
-
-public interface Reference {
-    String getId();
+public interface Markup {
     String getType();
-    Instant getModified();
-    int getVersion();
-    boolean isDeleted();
+    int getStart();
+    int getEnd();
+    String getUrl();
 }

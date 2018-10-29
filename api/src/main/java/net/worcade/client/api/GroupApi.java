@@ -14,7 +14,6 @@ import net.worcade.client.get.Reference;
 import net.worcade.client.get.ReferenceWithName;
 import net.worcade.client.modify.GroupModification;
 import net.worcade.client.query.GroupField;
-import net.worcade.client.query.MemberField;
 import net.worcade.client.query.Query;
 
 import java.util.Collection;
@@ -37,16 +36,16 @@ public interface GroupApi extends OwnerApi, RemoteIdsApi {
      */
     Result<? extends Collection<? extends Group>> getGroupList(Query<GroupField> query);
 
+    Result<?> addEmailAddress(String id, String... emails);
+    Result<?> removeEmailAddress(String id, String... emails);
+    Result<?> confirmEmailAddress(String id, String secret);
     Result<? extends Collection<? extends ReferenceWithName>> searchByEmail(String email);
-    Result<?> requestEmailChange(String id, String email, String password);
 
-    Result<? extends Collection<? extends ReferenceWithName>> getMembers(String id, Query<MemberField> query);
     Result<?> addMembers(String id, Reference... members);
-    Result<?> setMembers(String id, Reference... members);
+    Result<?> addMembers(String id, Collection<? extends Reference> members);
     Result<?> removeMembers(String id, Reference... members);
 
     Result<? extends ReferenceWithName> searchByDomain(String domain);
     Result<?> addDomains(String id, String... domains);
-    Result<?> setDomains(String id, String... domains);
     Result<?> removeDomains(String id, String... domains);
 }

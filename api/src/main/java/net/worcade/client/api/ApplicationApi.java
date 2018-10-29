@@ -5,10 +5,12 @@
 package net.worcade.client.api;
 
 import net.worcade.client.Result;
+import net.worcade.client.api.mixin.ApiKeysApi;
 import net.worcade.client.api.mixin.RemoteIdsApi;
 import net.worcade.client.create.ApplicationCreate;
 import net.worcade.client.get.Application;
 import net.worcade.client.get.ApplicationProfile;
+import net.worcade.client.get.CreateWithApiKey;
 import net.worcade.client.get.Reference;
 import net.worcade.client.modify.ApplicationModification;
 
@@ -17,8 +19,9 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.util.Collection;
 
-public interface ApplicationApi extends RemoteIdsApi {
+public interface ApplicationApi extends ApiKeysApi, RemoteIdsApi {
     ApplicationCreate createBuilder();
 
     Result<? extends Application> get(String id);
@@ -27,9 +30,11 @@ public interface ApplicationApi extends RemoteIdsApi {
      * Create a new Application. Use the {@link #createBuilder()} method for a new, empty template.
      */
     Result<? extends Reference> create(ApplicationModification subject);
+    Result<CreateWithApiKey> createWithApiKey(ApplicationModification subject, String apiKeyDescription);
     Result<?> updateProfile(ApplicationModification subject);
     Result<PublicKey> setupKeyExchange(String id, PublicKey applicationKey);
     Result<?> addVersions(String id, String... versions);
+    Result<? extends Collection<? extends Reference>> getByFingerprint(String fingerprint);
 
     /**
      * Helper method to generate a proper keypair used for application authentication.

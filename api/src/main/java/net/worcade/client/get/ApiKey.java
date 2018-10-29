@@ -4,12 +4,7 @@
 
 package net.worcade.client.get;
 
-import java.time.Instant;
-
-public interface Reference {
+public interface ApiKey {
     String getId();
-    String getType();
-    Instant getModified();
-    int getVersion();
-    boolean isDeleted();
+    String getDescription();
 }

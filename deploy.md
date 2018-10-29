@@ -2,11 +2,8 @@
 1. Add the account details for OSSRH to `~/.gradle/gradle properties`:
     * `ossrhUser = username` (not email address)
     * `ossrhPassword = password`
-1. Update the project version in [`build.gradle`](build.gradle)
-1. Run `./gradlew uploadShadow`
-1. Go to  https://oss.sonatype.org/#stagingRepositories and promote the artifact 
-
-### Problems
-* The `api-client-jersey` jar doesn't depend on `api-client`,
- because the shadow plugin doesn't support depending on another shadow jar.
-* The `uploadShadow` task doesn't upload the javadoc jar
+1. Update the project version in [`build.gradle`](build.gradle) to a non-SNAPSHOT version
+1. Run `./gradlew publish`
+1. Go to  https://oss.sonatype.org/#stagingRepositories and find the networcade repository (on the bottom)
+1. Close the repo and wait until the Activity tab shows "Repository closed"
+1. Promote the artifact

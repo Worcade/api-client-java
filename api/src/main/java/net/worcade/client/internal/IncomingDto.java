@@ -12,16 +12,22 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
 import net.worcade.client.exception.InvalidValueTypeException;
+import net.worcade.client.get.ApiKey;
 import net.worcade.client.get.ApplicationProfile;
 import net.worcade.client.get.Asset;
 import net.worcade.client.get.Attachment;
-import net.worcade.client.get.Company;
+import net.worcade.client.get.Authentication;
+import net.worcade.client.get.Checklist;
+import net.worcade.client.get.CompanyProfile;
 import net.worcade.client.get.Contact;
 import net.worcade.client.get.Conversation;
 import net.worcade.client.get.ConversationContent;
+import net.worcade.client.get.ConversationEvent;
+import net.worcade.client.get.Email;
 import net.worcade.client.get.ExternalNumber;
 import net.worcade.client.get.GroupProfile;
 import net.worcade.client.get.Label;
+import net.worcade.client.get.Markup;
 import net.worcade.client.get.Notification;
 import net.worcade.client.get.Reference;
 import net.worcade.client.get.ReferenceWithName;
@@ -29,8 +35,10 @@ import net.worcade.client.get.ReferenceWithNumber;
 import net.worcade.client.get.RemoteId;
 import net.worcade.client.get.RemoteIdSearchResult;
 import net.worcade.client.get.Room;
+import net.worcade.client.get.SamlSettings;
 import net.worcade.client.get.Site;
 import net.worcade.client.get.UserProfile;
+import net.worcade.client.get.View;
 import net.worcade.client.get.Webhook;
 import net.worcade.client.get.WebhookTestResult;
 import net.worcade.client.get.WorkOrder;
@@ -46,17 +54,18 @@ import java.util.Map;
 import java.util.Objects;
 
 @ToString
-class IncomingDto implements ApplicationProfile, Asset, Attachment, Company, Contact, Conversation, GroupProfile, Label,
+public class IncomingDto implements ApplicationProfile, Asset, Attachment, Checklist, CompanyProfile, Contact, Conversation, GroupProfile, Label,
         Room, Site, UserProfile, Webhook, WorkOrder,
-        Site.Coordinates, RemoteId, RemoteIdSearchResult, ExternalNumber, ConversationContent, Webhook.Header, Webhook.Log,
-        WebhookTestResult, ReferenceWithNumber, Notification, Notification.Tracking, WorkOrder.Row {
+        ApiKey, Site.Coordinates, RemoteId, RemoteIdSearchResult, ExternalNumber, ConversationContent, ConversationEvent, Markup, View,
+        Webhook.Header, Webhook.Log, WebhookTestResult, ReferenceWithNumber, Notification, Notification.Tracking,
+        WorkOrder.Row, Checklist.Row, Email, SamlSettings, Authentication {
     static IncomingDto of(Map<String, Object> data) {
         return data == null ? null : new IncomingDto(data);
     }
 
     @Getter(AccessLevel.PACKAGE) private final ImmutableMap<String, Object> data;
 
-    IncomingDto(Map<String, Object> data) {
+    private IncomingDto(Map<String, Object> data) {
         this.data = ImmutableMap.copyOf(Maps.filterValues(data, Objects::nonNull));
     }
 
@@ -68,20 +77,20 @@ class IncomingDto implements ApplicationProfile, Asset, Attachment, Company, Con
         return get(key, Integer.class, false);
     }
 
-    Integer getInteger(String key) {
+    private Integer getInteger(String key) {
         return get(key, Integer.class, true);
     }
 
-    Long getLong(String key) {
+    private Long getLong(String key) {
         return get(key, Long.class, true);
     }
 
-    Instant getTimestamp(String key) {
+    private Instant getTimestamp(String key) {
         Integer timestamp = getInteger(key);
         return timestamp == null ? null : Instant.ofEpochSecond(timestamp);
     }
 
-    Float getFloat(String key) {
+    private Float getFloat(String key) {
         return get(key, Double.class, false).floatValue();
     }
 
@@ -90,18 +99,22 @@ class IncomingDto implements ApplicationProfile, Asset, Attachment, Company, Con
         return of(data);
     }
 
-    List<IncomingDto> getListOfDtos(String key) {
+    private List<IncomingDto> getListOfDtos(String key) {
         @SuppressWarnings("unchecked") List<Map<String, Object>> data = get(key, List.class, true);
         return data == null ? ImmutableList.of() : ImmutableList.copyOf(Lists.transform(data, IncomingDto::of));
     }
 
-    <T> List<T> getList(String key) {
+    private <T> List<T> getList(String key) {
         @SuppressWarnings("unchecked") List<T> data = get(key, List.class, true);
         return data == null ? ImmutableList.of() : ImmutableList.copyOf(data);
     }
 
     boolean getBoolean(String key) {
         return get(key, Boolean.class, false);
+    }
+
+    private Boolean getNullableBoolean(String key) {
+        return get(key, Boolean.class, true);
     }
 
     @Override
@@ -115,8 +128,23 @@ class IncomingDto implements ApplicationProfile, Asset, Attachment, Company, Con
     }
 
     @Override
+    public int getVersion() {
+        return getInt("version");
+    }
+
+    @Override
     public String getType() {
         return getString("type");
+    }
+
+    @Override
+    public int getStart() {
+        return getInt("start");
+    }
+
+    @Override
+    public int getEnd() {
+        return getInt("end");
     }
 
     @Override
@@ -356,6 +384,11 @@ class IncomingDto implements ApplicationProfile, Asset, Attachment, Company, Con
     }
 
     @Override
+    public Collection<? extends ConversationEvent> getEvents() {
+        return getListOfDtos("events");
+    }
+
+    @Override
     public Reference getContent() {
         return getDto("content");
     }
@@ -378,6 +411,11 @@ class IncomingDto implements ApplicationProfile, Asset, Attachment, Company, Con
     @Override
     public int getRating() {
         return getInt("rating");
+    }
+
+    @Override
+    public Collection<? extends Markup> getMarkup() {
+        return getListOfDtos("markups");
     }
 
     @Override
@@ -481,8 +519,13 @@ class IncomingDto implements ApplicationProfile, Asset, Attachment, Company, Con
     }
 
     @Override
-    public Reference getSubject() {
+    public ReferenceWithName getSubject() {
         return getDto("subject");
+    }
+
+    @Override
+    public String getContext() {
+        return getString("context");
     }
 
     @Override
@@ -491,18 +534,18 @@ class IncomingDto implements ApplicationProfile, Asset, Attachment, Company, Con
     }
 
     @Override
-    public Collection<? extends Row> getRows() {
+    public Collection<IncomingDto> getRows() {
         return getListOfDtos("rows");
     }
 
     @Override
     public boolean isApproved() {
-        return Objects.equals(true, get("approved", Boolean.class, true));
+        return Objects.equals(true, getNullableBoolean("approved"));
     }
 
     @Override
     public boolean isRejected() {
-        return Objects.equals(false, get("approved", Boolean.class, true));
+        return Objects.equals(false, getNullableBoolean("approved"));
     }
 
     @Override
@@ -524,6 +567,126 @@ class IncomingDto implements ApplicationProfile, Asset, Attachment, Company, Con
     @Override
     public String getBody() {
         return getString("body");
+    }
+
+    @Override
+    public boolean confirmed() {
+        return getBoolean("confirmed");
+    }
+
+    @Override
+    public boolean hasSaml() {
+        return getBoolean("hasSaml");
+    }
+
+    @Override
+    public Collection<? extends Email> getSecondaryEmails() {
+        return getListOfDtos("secondaryEmails");
+    }
+
+    @Override
+    public Reference getMainGroup() {
+        return getDto("mainGroup");
+    }
+
+    @Override
+    public String getEntityId() {
+        return getString("entityId");
+    }
+
+    @Override
+    public String getSsoServiceUrl() {
+        return getString("ssoServiceUrl");
+    }
+
+    @Override
+    public String getCertificate() {
+        return getString("certificate");
+    }
+
+    @Override
+    public String getFingerprint() {
+        return getString("fingerprint");
+    }
+
+    @Override
+    public Collection<? extends Reference> getLinkedConversations() {
+        return getListOfDtos("linkedConversations");
+    }
+
+    @Override
+    public Collection<? extends View> getViews() {
+        return getListOfDtos("views");
+    }
+
+    @Override
+    public ReferenceWithName getUser() {
+        return getDto("user");
+    }
+
+    @Override
+    public ReferenceWithName getApplication() {
+        return getDto("application");
+    }
+
+    @Override
+    public ReferenceWithName getAdminUser() {
+        return getDto("adminUser");
+    }
+
+    @Override
+    public Collection<? extends ReferenceWithName> getWatchers() {
+        return getListOfDtos("watchers");
+    }
+
+    @Override
+    public boolean isChecked() {
+        return getBoolean("check");
+    }
+
+    @Override
+    public Instant getLastView() {
+        return getTimestamp("lastView");
+    }
+
+    @Override
+    public Boolean isInfected() {
+        return getNullableBoolean("infected");
+    }
+
+    @Override
+    public Collection<? extends ReferenceWithName> getInvolvedCompanies() {
+        return getListOfDtos("involvedCompanies");
+    }
+
+    @Override
+    public String getNotes() {
+        return getString("notes");
+    }
+
+    @Override
+    public Collection<? extends ReferenceWithName> getSharedWith() {
+        return getListOfDtos("sharedWith");
+    }
+
+    @Override
+    public boolean isClosed() {
+        return getBoolean("closed");
+    }
+
+    @Override
+    public String getMetadataUrl() {
+        return getString("metadataUrl");
+    }
+
+    @Override
+    public String getAttribute() {
+        return getString("attribute");
+    }
+
+    @Override
+    public Collection<String> getVersions() {
+        return getList("versions");
     }
 
     private <T> T get(String key, Class<T> type, boolean allowNull) {

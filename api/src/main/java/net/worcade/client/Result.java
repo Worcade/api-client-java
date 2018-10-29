@@ -5,6 +5,7 @@
 package net.worcade.client;
 
 import com.google.common.collect.ImmutableList;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,14 +33,18 @@ public class Result<T> {
 
     @AllArgsConstructor
     public static class Message {
-        private final ErrorCode code;
+        private final Code code;
         @Getter private final String message;
 
         public boolean hasCode() {
             return code != null;
         }
 
-        public ErrorCode getCode() {
+        public boolean isCode(Code code) {
+            return this.code == checkNotNull(code);
+        }
+
+        public Code getCode() {
             checkState(hasCode(), "This message does not have a code");
             return code;
         }
@@ -54,6 +59,7 @@ public class Result<T> {
     @Getter private final List<Message> messages;
     private final T result;
 
+    @CanIgnoreReturnValue
     public T getResult() {
         checkState(ok, "Action failed with %s, cannot get result", messages);
         return result;

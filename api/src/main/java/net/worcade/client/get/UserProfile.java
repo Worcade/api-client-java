@@ -20,4 +20,5 @@ public interface UserProfile extends User {
     boolean isSubscribedToGettingStarted();
     boolean isSubscribedToNewsletter();
     Collection<? extends ReferenceWithName> getTrustedApplications();
+    Collection<? extends Email> getSecondaryEmails();
 }

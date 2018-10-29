@@ -5,11 +5,12 @@
 package net.worcade.client.get;
 
 import java.time.Instant;
-import java.util.Collection;
 
-public interface ConversationContent {
+public interface ConversationEvent {
     String getType();
     Instant getTimestamp();
+
+    String getName();
 
     /**
      * Get a reference to the entity who added the content.
@@ -19,18 +20,7 @@ public interface ConversationContent {
     /**
      * Get a reference to the content. Available for all types except `MESSAGE` and `EVALUATION`.
      */
-    Reference getContent();
+    ReferenceWithName getSubject();
 
-    /**
-     * Get the text message for this content. Only available if {@link #getType()} returns `MESSAGE`.
-     */
-    String getMessage();
-
-    /**
-     * Get the rating for this evaluation. Only available if {@link #getType()} returns `EVALUATION`.
-     * @return a rating between 1 and 5
-     */
-    int getRating();
-
-    Collection<? extends Markup> getMarkup();
+    String getContext();
 }

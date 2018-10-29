@@ -6,10 +6,6 @@ package net.worcade.client.get;
 
 import java.time.Instant;
 
-public interface Reference {
-    String getId();
-    String getType();
-    Instant getModified();
-    int getVersion();
-    boolean isDeleted();
+public interface View extends ReferenceWithName {
+    Instant getLastView();
 }

@@ -10,7 +10,6 @@ public interface ConversationModification extends EntityModification {
     ConversationModification name(String name);
     ConversationModification reporter(Reference reporter);
     ConversationModification assignee(Reference assignee);
-    ConversationModification testMode(boolean testMode);
     ConversationModification close();
     ConversationModification reopen();
     ConversationModification archive();

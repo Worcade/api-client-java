@@ -29,11 +29,20 @@ public interface Query<T extends EntityField> {
         return WorcadeQuery.builder();
     }
 
+    static Builder<ContactField> contacts() {
+        return WorcadeQuery.builder();
+    }
+
+    static Builder<WebhookField> webhook() {
+        return WorcadeQuery.builder();
+    }
+
     interface Builder<T extends EntityField> {
 
         /**
          * Add the specified fields to the result
          */
+        @SuppressWarnings("unchecked")
         Builder<T> fields(T... fields);
 
         /**

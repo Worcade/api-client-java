@@ -16,7 +16,6 @@ import net.worcade.client.get.ReferenceWithNumber;
 import net.worcade.client.modify.ConversationModification;
 import net.worcade.client.query.ConversationField;
 import net.worcade.client.query.Query;
-import net.worcade.client.query.SearchQuery;
 
 import java.util.Collection;
 
@@ -24,6 +23,7 @@ public interface ConversationApi extends LabelsApi, RemoteIdsApi {
     ConversationCreate createBuilder();
 
     Result<? extends Conversation> get(String id);
+    Result<? extends Conversation> getWithHtmlMessages(String id);
     /**
      * Create a new Conversation. Use the {@link #createBuilder()} method for a new, empty template.
      */
@@ -34,6 +34,8 @@ public interface ConversationApi extends LabelsApi, RemoteIdsApi {
     Result<?> view(String id);
 
     Result<?> addMessage(String id, String message);
+    Result<?> editMessage(String conversationId, String messageId, String message);
+    Result<?> addHtmlMessage(String id, String message);
     Result<?> addContent(String id, Reference... content);
 //    Result<?> addWorkOrder(String id, WorkOrderCreate workOrder);
     Result<?> addEvaluation(String id, int rating);
@@ -46,5 +48,4 @@ public interface ConversationApi extends LabelsApi, RemoteIdsApi {
 
     Result<? extends ReferenceWithName> searchByNumber(String conversationNumber);
     Result<? extends Collection<? extends ReferenceWithName>> searchByContent(String contentId);
-    Result<? extends Collection<? extends ReferenceWithName>> searchByText(SearchQuery<ConversationField> query);
 }

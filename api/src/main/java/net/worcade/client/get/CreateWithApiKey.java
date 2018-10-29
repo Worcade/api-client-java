@@ -4,12 +4,10 @@
 
 package net.worcade.client.get;
 
-import java.time.Instant;
+import lombok.Value;
 
-public interface Reference {
-    String getId();
-    String getType();
-    Instant getModified();
-    int getVersion();
-    boolean isDeleted();
+@Value
+public class CreateWithApiKey {
+    private final Reference created;
+    private final String apiKey;
 }

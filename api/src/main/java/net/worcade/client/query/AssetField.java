@@ -5,6 +5,6 @@
 package net.worcade.client.query;
 
 public enum AssetField implements EntityField {
-    type, modified, version, name, assetType, assetMake, assetModel, serial, specification,
-    location, picture, labels, sharedWith, deleted, created, creator, modifier, owners, remoteIds
+    type, modified, version, name, assetType, assetMake, assetModel, serial, specification, location,
+    picture, labels, involvedCompanies, sharedWith, deleted, created, creator, modifier, owners, remoteIds
 }

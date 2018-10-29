@@ -13,7 +13,6 @@ public interface GroupModification extends EntityModification {
     GroupModification mailImportAddress(String mailImportAddress);
     GroupModification locale(Locale locale);
     GroupModification autoShareTarget(Reference target);
-    GroupModification company(Reference company);
     GroupModification picture(Reference picture);
     GroupModification visible(boolean visible);
 }

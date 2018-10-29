@@ -3,13 +3,11 @@
 // license that can be found in the LICENSE file.
 
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.16.18'
+    annotationProcessor 'org.projectlombok:lombok:1.18.2'
+    compileOnly 'org.projectlombok:lombok:1.18.2'
 
-    compile project(':api')
-    runtime project(':jersey-client')
-
-    runtime 'org.glassfish.jersey.core:jersey-client:2.26'
+    implementation project(':api')
+    implementation project(':jersey-client')
+    implementation 'com.google.guava:guava:27.0-jre'
     runtime 'org.glassfish.jersey.inject:jersey-hk2:2.26'
-    runtime 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.9.1'
-    compile 'org.slf4j:slf4j-log4j12:1.7.25'
 }

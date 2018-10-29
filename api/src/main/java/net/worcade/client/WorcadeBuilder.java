@@ -6,10 +6,6 @@ package net.worcade.client;
 
 public interface WorcadeBuilder {
     /**
-     * The Worcade API key. You can generate an API key in <a href="https://worcade.net/profile">your user profile</a>
-     */
-    WorcadeBuilder apiKey(String apiKey);
-    /**
      * The URL of the Worcade server. Defaults to https://worcade.net
      */
     WorcadeBuilder baseUrl(String url);
@@ -20,5 +16,5 @@ public interface WorcadeBuilder {
      */
     WorcadeBuilder disableETagCache();
 
-    Worcade build();
+    Result<? extends Worcade> build();
 }

@@ -9,6 +9,5 @@ import net.worcade.client.get.Reference;
 
 public interface ShareApi {
     Result<?> addShares(String id, Reference... shares);
-    Result<?> setShares(String id, Reference... shares);
     Result<?> removeShares(String id, Reference... shares);
 }

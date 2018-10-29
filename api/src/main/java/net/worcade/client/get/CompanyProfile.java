@@ -4,12 +4,10 @@
 
 package net.worcade.client.get;
 
-import java.time.Instant;
+import java.util.Collection;
 
-public interface Reference {
-    String getId();
-    String getType();
-    Instant getModified();
-    int getVersion();
-    boolean isDeleted();
+public interface CompanyProfile extends Company {
+    Collection<? extends ReferenceWithName> getMembers();
+    Reference getMainGroup();
+    Collection<String> getDomains();
 }
