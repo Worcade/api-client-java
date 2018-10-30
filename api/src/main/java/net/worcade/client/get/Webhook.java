@@ -23,7 +23,7 @@ public interface Webhook {
     }
 
     interface Log {
-        int getStatus();
+        Integer getStatus();
         Instant getTimestamp();
         String getResponseBody();
     }

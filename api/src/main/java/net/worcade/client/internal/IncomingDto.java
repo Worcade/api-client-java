@@ -464,8 +464,8 @@ public class IncomingDto implements ApplicationProfile, Asset, Attachment, Check
     }
 
     @Override
-    public int getStatus() {
-        return getInt("status");
+    public Integer getStatus() {
+        return getInteger("status");
     }
 
     @Override

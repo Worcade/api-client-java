@@ -37,7 +37,7 @@ public class WebhookExample {
         Reference hook = webhookApi.create(me.getId(), webhookApi.createBuilder()
                 .event(Webhook.Event.CONVERSATION_UPDATE)
                 .suppressOwn(false)
-                .url("https://requestb.in/xtj1bxxt"))
+                .url("https://worcade.free.beeceptor.com/" + app.getId()))
                 .getResult();
 
         // Test the webhook

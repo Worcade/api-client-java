@@ -5,6 +5,6 @@
 package net.worcade.client.get;
 
 public interface WebhookTestResult {
-    int getStatus();
+    Integer getStatus();
     String getBody();
 }

@@ -10,4 +10,6 @@ dependencies {
     implementation project(':jersey-client')
     implementation 'com.google.guava:guava:27.0-jre'
     runtime 'org.glassfish.jersey.inject:jersey-hk2:2.26'
+    runtime 'org.slf4j:slf4j-log4j12:1.7.25'
+    runtime 'javax.activation:activation:1.1.1'
 }
