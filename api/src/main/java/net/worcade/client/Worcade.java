@@ -21,6 +21,7 @@ import net.worcade.client.api.SiteApi;
 import net.worcade.client.api.UserApi;
 import net.worcade.client.api.WebhookApi;
 import net.worcade.client.api.WorkOrderApi;
+import net.worcade.client.api.mixin.RemoteIdsApi;
 import net.worcade.client.get.Authentication;
 import net.worcade.client.get.ExternalNumber;
 import net.worcade.client.get.Notification;
@@ -103,9 +104,6 @@ public interface Worcade {
     Result<Boolean> probeUserTrust(String userId, String applicationId);
 
     Result<? extends Authentication> getAuthentication();
-    Result<? extends Authentication> loginAdmin(String token, String userId, String applicationId);
-    Result<? extends Authentication> upgradeToAdmin(String userId, String applicationId);
-    Result<?> logoutAdmin();
 
     Result<? extends Collection<? extends Notification>> getNotifications();
 
@@ -131,7 +129,7 @@ public interface Worcade {
     WebhookApi getWebhookApi();
     WorkOrderApi getWorkOrderApi();
 
-    Result<?> log(String s);
+
     Worcade copyWithSameAuth();
 
     void close();

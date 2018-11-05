@@ -10,29 +10,54 @@ import com.google.common.net.HttpHeaders;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.worcade.client.Result;
 import net.worcade.client.Worcade;
-import net.worcade.client.api.*;
+import net.worcade.client.api.ApplicationApi;
+import net.worcade.client.api.AssetApi;
+import net.worcade.client.api.AttachmentApi;
+import net.worcade.client.api.ChecklistApi;
+import net.worcade.client.api.CompanyApi;
+import net.worcade.client.api.ContactsApi;
+import net.worcade.client.api.ConversationApi;
+import net.worcade.client.api.GroupApi;
+import net.worcade.client.api.LabelApi;
+import net.worcade.client.api.ReclaimApi;
+import net.worcade.client.api.RoomApi;
+import net.worcade.client.api.SearchApi;
+import net.worcade.client.api.SiteApi;
+import net.worcade.client.api.UserApi;
+import net.worcade.client.api.WebhookApi;
+import net.worcade.client.api.WorkOrderApi;
 import net.worcade.client.exception.IncompatibleVersionException;
 import net.worcade.client.exception.InvalidIdException;
-import net.worcade.client.get.*;
+import net.worcade.client.get.Authentication;
+import net.worcade.client.get.BinaryData;
+import net.worcade.client.get.ExternalNumber;
+import net.worcade.client.get.Notification;
+import net.worcade.client.get.Reference;
+import net.worcade.client.get.ReferenceWithName;
+import net.worcade.client.get.RemoteId;
+import net.worcade.client.get.Webhook;
+import net.worcade.client.get.WorkOrder;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
 import java.io.InputStream;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.time.Duration;
-import java.util.*;
+import java.util.Collection;
+import java.util.Currency;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Preconditions.*;
 
 @Slf4j
 public abstract class WorcadeClient implements Worcade {
-    private static String PUBLIC_API = "api/v" + Worcade.VERSION.getMajor() + "/";
+    protected static String PUBLIC_API = "api/v" + Worcade.VERSION.getMajor() + "/";
 
     protected static final Function<Object, IncomingDto> DTO_FUNCTION = o -> {
         @SuppressWarnings("unchecked") Map<String, Object> data = (Map<String, Object>) o;
@@ -41,9 +66,8 @@ public abstract class WorcadeClient implements Worcade {
 
     @Getter(AccessLevel.PROTECTED) private final String baseUrl;
 
-    @Getter private String userHeader;
-    @Getter(AccessLevel.PROTECTED) private String applicationHeader;
-    @Getter(AccessLevel.PROTECTED) private String adminHeader;
+    @Getter(AccessLevel.PROTECTED) @Setter(AccessLevel.PROTECTED) private String userHeader;
+    @Getter(AccessLevel.PROTECTED) @Setter(AccessLevel.PROTECTED) private String applicationHeader;
 
     @Getter private final ApplicationApi applicationApi = new WorcadeApi(this, PUBLIC_API + "application");
     @Getter private final AssetApi assetApi = new WorcadeApi(this, PUBLIC_API + "asset");
@@ -101,7 +125,6 @@ public abstract class WorcadeClient implements Worcade {
     }
 
     private Result<ReferenceWithName> loginUser(String authHeaderValue, String urlSuffix) {
-        adminHeader = null;
         userHeader = null;
         applicationHeader = null;
         Result<IncomingDto> result = get(PUBLIC_API + "authentication/user" + urlSuffix,
@@ -114,7 +137,6 @@ public abstract class WorcadeClient implements Worcade {
 
     @Override
     public Result<ReferenceWithName> setUserApiKey(String apiKey) {
-        adminHeader = null;
         userHeader = "APIKEY " + apiKey;
         applicationHeader = null;
         Result<ReferenceWithName> result = getAuthentication().map(Authentication::getUser);
@@ -137,7 +159,6 @@ public abstract class WorcadeClient implements Worcade {
 
     @Override
     public Result<ReferenceWithName> loginApplication(String applicationId, PrivateKey applicationPrivateKey, PublicKey worcadePublicKey) {
-        adminHeader = null;
         userHeader = null;
         applicationHeader = null;
         checkId(applicationId);
@@ -155,7 +176,6 @@ public abstract class WorcadeClient implements Worcade {
 
     @Override
     public Result<ReferenceWithName> setApplicationSourceAuth(String id) {
-        adminHeader = null;
         userHeader = null;
         applicationHeader = id;
         return id == null ? Result.ok(null) : getAuthentication().map(Authentication::getApplication);
@@ -163,7 +183,6 @@ public abstract class WorcadeClient implements Worcade {
 
     @Override
     public Result<ReferenceWithName> setApplicationApiKey(String apiKey) {
-        adminHeader = null;
         userHeader = null;
         applicationHeader = "APIKEY " + apiKey;
         Result<ReferenceWithName> result = getAuthentication().map(Authentication::getApplication);
@@ -201,35 +220,6 @@ public abstract class WorcadeClient implements Worcade {
         return result;
     }
 
-    @Override
-    public Result<? extends Authentication> loginAdmin(String token, String userId, String applicationId) {
-        adminHeader = "DIGEST " + token;
-        return upgradeToAdmin(userId, applicationId);
-    }
-
-    @Override
-    public Result<? extends Authentication> upgradeToAdmin(String userId, String applicationId) {
-        if (adminHeader == null) {
-            checkState(userHeader != null);
-            checkState(userHeader.startsWith("DIGEST "));
-            adminHeader = userHeader;
-        }
-        userHeader = userId;
-        applicationHeader = applicationId;
-        return getAuthentication();
-    }
-
-    @Override
-    public Result<?> logoutAdmin() {
-        if (adminHeader == null) {
-            return Result.ok(null);
-        }
-        userHeader = adminHeader;
-        adminHeader = null;
-        applicationHeader = null;
-        return logoutUser();
-    }
-
     @VisibleForTesting
     public Result<? extends Authentication> getSecretAuthentication(String userId, String secret) {
         return get(PUBLIC_API + "authentication", new Header("Worcade-User", userId), new Header("Worcade-Secret", secret));
@@ -243,11 +233,6 @@ public abstract class WorcadeClient implements Worcade {
     @Override
     public Result<Boolean> probeUserTrust(String userId, String applicationId) {
         return get(PUBLIC_API + "authentication/user/" + checkId(userId) + "/trusted/" + checkId(applicationId)).map(d -> d.getBoolean("trusted"));
-    }
-
-    @Override
-    public Result<?> log(String message) {
-        return post(PUBLIC_API + "about/log", Entity.entity(message, MediaType.TEXT_PLAIN_TYPE));
     }
 
     @Override
@@ -295,13 +280,11 @@ public abstract class WorcadeClient implements Worcade {
     }
 
     private void setUserToken(String token) {
-        adminHeader = null;
         applicationHeader = null;
         userHeader = "DIGEST " + token;
     }
 
     private void setApplicationToken(String token) {
-        adminHeader = null;
         userHeader = null;
         applicationHeader = "DIGEST " + token;
     }
@@ -309,7 +292,6 @@ public abstract class WorcadeClient implements Worcade {
     @Override
     public WorcadeClient copyWithSameAuth() {
         WorcadeClient client = copy();
-        client.adminHeader = adminHeader;
         client.applicationHeader = applicationHeader;
         client.userHeader = userHeader;
         return client;
@@ -324,7 +306,4 @@ public abstract class WorcadeClient implements Worcade {
     protected abstract Result<IncomingDto> put(String url, Object data, Header... additionalHeader);
     protected abstract Result<IncomingDto> delete(String url, Header... additionalHeader);
     protected abstract Result<IncomingDto> delete(String url, Object data, Header... additionalHeader);
-
-    protected abstract <V> Result<V> custom(String method, String url, Class<V> responseType, Header... headers);
-    protected abstract <V> Result<V> customWithAuth(String method, String url, Class<V> responseType, Header... additionalHeaders);
 }

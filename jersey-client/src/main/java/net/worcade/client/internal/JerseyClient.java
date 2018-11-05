@@ -8,6 +8,8 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.auto.service.AutoService;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
@@ -41,8 +43,8 @@ public class JerseyClient extends WorcadeClient {
     @AutoService(WorcadeBuilder.class)
     @Accessors(fluent = true, chain = true)
     public static class JerseyClientBuilder implements WorcadeBuilder {
-        @Setter private String baseUrl = "https://worcade.net";
-        private boolean enableETagCache = true;
+        @Setter String baseUrl = "https://worcade.net";
+        boolean enableETagCache = true;
 
         @Override
         public WorcadeBuilder disableETagCache() {
@@ -57,7 +59,11 @@ public class JerseyClient extends WorcadeClient {
             if (enableETagCache) {
                 builder.register(new EtagFilter());
             }
-            return new JerseyClient(baseUrl, builder.build());
+            return createInstance(baseUrl, builder.build());
+        }
+
+        protected WorcadeClient createInstance(String baseUrl, Client client) {
+            return new JerseyClient(baseUrl, client);
         }
 
         @Override
@@ -72,9 +78,9 @@ public class JerseyClient extends WorcadeClient {
         }
     }
 
-    private final Client client;
+    @Getter(AccessLevel.PROTECTED) private final Client client;
 
-    private JerseyClient(String baseUrl, Client client) {
+    JerseyClient(String baseUrl, Client client) {
         super(baseUrl);
         this.client = client;
     }
@@ -152,31 +158,11 @@ public class JerseyClient extends WorcadeClient {
     }
 
     @Override
-    protected <V> Result<V> custom(String method, String url, Class<V> responseType, Header... allHeaders) {
-        Invocation.Builder request = client.target(getBaseUrl() + url).request();
-        return custom(method, url, responseType, request, allHeaders);
-    }
-
-    @Override
-    protected <V> Result<V> customWithAuth(String method, String url, Class<V> responseType, Header... additionalHeaders) {
-        Invocation.Builder request = target(getBaseUrl() + url, additionalHeaders);
-        return custom(method, url, responseType, request, additionalHeaders);
-    }
-
-    private <V> Result<V> custom(String method, String url, Class<V> responseType, Invocation.Builder request, Header[] allHeaders) {
-        for (Header header : allHeaders) {
-            request.header(header.getName(), header.getValue());
-        }
-        Response response = request.method(method);
-        return handle(method, url, response, new GenericType<V>(responseType), v -> v);
-    }
-
-    @Override
     public void close() {
         client.close();
     }
 
-    private Result<Object> handle(String method, String url, Invocation.Builder request, Function<Invocation.Builder, Response> handler) {
+    protected Result<Object> handle(String method, String url, Invocation.Builder request, Function<Invocation.Builder, Response> handler) {
         Response response;
         try {
             response = handler.apply(request);
@@ -186,7 +172,8 @@ public class JerseyClient extends WorcadeClient {
         }
         return handle(method, url, response, ENVELOPE_TYPE, Envelope::getData);
     }
-    private <T, V> Result<V> handle(String method, String url, Response response, GenericType<T> responseType, Function<T, V> mapper) {
+
+    protected <T, V> Result<V> handle(String method, String url, Response response, GenericType<T> responseType, Function<T, V> mapper) {
         if (response.getStatus() == 429) {
             return Result.failed(ImmutableList.of(new Result.Message(null, "Too many requests")));
         }
@@ -224,14 +211,17 @@ public class JerseyClient extends WorcadeClient {
         return Result.failed(messageList);
     }
 
-    private Invocation.Builder target(String url, Header... additionalHeaders) {
-        Invocation.Builder builder = client.target(url).request()
-                .header("Worcade-Admin", getAdminHeader())
-                .header("Worcade-User", getUserHeader())
-                .header("Worcade-Application", getApplicationHeader());
+    protected Invocation.Builder target(String url, Header... additionalHeaders) {
+        Invocation.Builder builder = client.target(url).request();
+        builder = addAuthHeaders(builder);
         for (Header header : additionalHeaders) {
             builder.header(header.getName(), header.getValue());
         }
         return builder;
+    }
+
+    protected Invocation.Builder addAuthHeaders(Invocation.Builder builder) {
+        return builder.header("Worcade-User", getUserHeader())
+                      .header("Worcade-Application", getApplicationHeader());
     }
 }

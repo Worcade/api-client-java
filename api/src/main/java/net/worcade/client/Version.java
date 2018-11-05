@@ -6,9 +6,10 @@ package net.worcade.client;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-@Getter
+@Getter @EqualsAndHashCode
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class Version {
     private final int major;
