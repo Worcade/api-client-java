@@ -12,6 +12,9 @@ import net.worcade.client.get.RemoteIdSearchResult;
 
 import java.util.Collection;
 
+/**
+ * Base class for remote id interactions
+ */
 public interface RemoteIdsApi {
     /**
      * Search for entities with remote ids for the current authenticated application.

@@ -42,7 +42,7 @@ import java.util.function.Supplier;
 
 /**
  * Entry point to the Worcade API client library.
- * Create a Worcade client using either of the #create methods
+ * Create a Worcade client using the {@link #builder()} method
  */
 @CheckReturnValue
 public interface Worcade {
@@ -52,6 +52,10 @@ public interface Worcade {
      */
     Version VERSION = new Version(2,13,0);
 
+    /**
+     * Creates a {@link WorcadeBuilder} instance from a registered service provider.
+     * The api-client-jersey library provides such an instance, or you can implement your own if you don't want to depend on Jersey.
+     */
     static WorcadeBuilder builder() {
         return ServiceLoader.load(WorcadeBuilder.class).iterator().next();
     }
@@ -103,10 +107,16 @@ public interface Worcade {
      */
     Result<Boolean> probeUserTrust(String userId, String applicationId);
 
+    /**
+     * Get information about the currently authenticated application and/or user, and the company and groups they are members of
+     */
     Result<? extends Authentication> getAuthentication();
 
     Result<? extends Collection<? extends Notification>> getNotifications();
 
+    /**
+     * Create a remote id object for use with {@link RemoteIdsApi} methods
+     */
     RemoteId createRemoteId(String remoteIdType, String remoteId);
     ExternalNumber createExternalNumber(String number, String description);
     Webhook.Header createWebhookHeader(String name, String value);
@@ -129,11 +139,24 @@ public interface Worcade {
     WebhookApi getWebhookApi();
     WorkOrderApi getWorkOrderApi();
 
-
+    /**
+     * Creates a copy of this client which uses the same internal client instance.
+     * This is useful if you need a client that's not logged in, a client logged in with an application only,
+     *  and a client logged in with an application and user simultaneously.
+     *
+     * Note that calling {@link #close()} on any copied instance closes the internal client, and hence closes all copies.
+     */
     Worcade copyWithSameAuth();
 
+    /**
+     * Closes all resources used by this client. Effectively also closes all copies created by {@link #copyWithSameAuth()}
+     */
     void close();
 
+    /**
+     * Automatically retries a call if it returns with {@link Code#CONFLICT_ALLOW_RETRY}. This method should only be used
+     *  if you cannot otherwise make sure the calls won't conflict, for example by making them in series instead of parallel.
+     */
     static <T> Result<T> withRetry(Supplier<Result<T>> method) {
         Result<T> result = method.get();
         if (!result.isOk() && Iterables.all(result.getMessages(), m -> m.isCode(Code.CONFLICT_ALLOW_RETRY))) {
