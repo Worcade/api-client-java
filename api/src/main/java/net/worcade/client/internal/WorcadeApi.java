@@ -64,7 +64,6 @@ import net.worcade.client.query.ContactField;
 import net.worcade.client.query.ConversationField;
 import net.worcade.client.query.GroupField;
 import net.worcade.client.query.LabelField;
-import net.worcade.client.query.MemberField;
 import net.worcade.client.query.Query;
 import net.worcade.client.query.RoomField;
 import net.worcade.client.query.SiteField;
@@ -165,7 +164,7 @@ class WorcadeApi implements ApplicationApi, AssetApi, AttachmentApi, ChecklistAp
 
     @Override
     public Result<? extends Reference> create(String conversationId, WorkOrderCreate subject) {
-        return worcadeClient.post("conversation/" + WorcadeClient.checkId(conversationId) + "/content/workorder",
+        return worcadeClient.post(WorcadeClient.PUBLIC_API + "conversation/" + WorcadeClient.checkId(conversationId) + "/content/workorder",
                 ((Modification) subject).getData());
     }
 

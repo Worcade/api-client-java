@@ -5,6 +5,7 @@
 package net.worcade.client.get;
 
 import net.worcade.client.modify.WorkOrderModification;
+import net.worcade.client.modify.WorkOrderRowModification;
 
 import java.time.Duration;
 import java.util.Collection;
@@ -20,6 +21,8 @@ public interface WorkOrder extends Entity, ReferenceWithName {
     boolean isRejected();
 
     interface Row {
+        WorkOrderRowModification modify();
+
         String getId();
         String getDescription();
         Duration getDuration();
