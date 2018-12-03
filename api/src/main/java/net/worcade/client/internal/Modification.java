@@ -50,26 +50,26 @@ class Modification implements ApplicationCreate, AssetCreate, CompanyCreate, Con
 
     @Getter(AccessLevel.PACKAGE) private final Map<String, Object> data;
 
-    private Modification() {
+    Modification() {
         this.data = Maps.newHashMap();
     }
 
-    private Modification(Map<String, Object> data) {
+    Modification(Map<String, Object> data) {
         this.data = Maps.newHashMap(data);
     }
 
-    private Modification putReference(String key, Reference reference) {
+    Modification putReference(String key, Reference reference) {
         return put(key, cleanReference(reference));
     }
 
-    private Modification putReferenceList(String key, Reference... references) {
+    Modification putReferenceList(String key, Reference... references) {
         return put(key, cleanReferences(references));
     }
-    private Modification putReferenceList(String key, Collection<? extends Reference> references) {
+    Modification putReferenceList(String key, Collection<? extends Reference> references) {
         return put(key, cleanReferences(references));
     }
 
-    private Modification put(String key, Object value) {
+    Modification put(String key, Object value) {
         data.put(key, value);
         return this;
     }

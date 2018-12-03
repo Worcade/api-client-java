@@ -77,20 +77,20 @@ public class IncomingDto implements ApplicationProfile, Asset, Attachment, Check
         return get(key, Integer.class, false);
     }
 
-    private Integer getInteger(String key) {
+    Integer getInteger(String key) {
         return get(key, Integer.class, true);
     }
 
-    private Long getLong(String key) {
+    Long getLong(String key) {
         return get(key, Long.class, true);
     }
 
-    private Instant getTimestamp(String key) {
+    Instant getTimestamp(String key) {
         Integer timestamp = getInteger(key);
         return timestamp == null ? null : Instant.ofEpochSecond(timestamp);
     }
 
-    private Float getFloat(String key) {
+    Float getFloat(String key) {
         return get(key, Double.class, false).floatValue();
     }
 
@@ -99,12 +99,12 @@ public class IncomingDto implements ApplicationProfile, Asset, Attachment, Check
         return of(data);
     }
 
-    private List<IncomingDto> getListOfDtos(String key) {
+    List<IncomingDto> getListOfDtos(String key) {
         @SuppressWarnings("unchecked") List<Map<String, Object>> data = get(key, List.class, true);
         return data == null ? ImmutableList.of() : ImmutableList.copyOf(Lists.transform(data, IncomingDto::of));
     }
 
-    private <T> List<T> getList(String key) {
+    <T> List<T> getList(String key) {
         @SuppressWarnings("unchecked") List<T> data = get(key, List.class, true);
         return data == null ? ImmutableList.of() : ImmutableList.copyOf(data);
     }
@@ -113,7 +113,7 @@ public class IncomingDto implements ApplicationProfile, Asset, Attachment, Check
         return get(key, Boolean.class, false);
     }
 
-    private Boolean getNullableBoolean(String key) {
+    Boolean getNullableBoolean(String key) {
         return get(key, Boolean.class, true);
     }
 
