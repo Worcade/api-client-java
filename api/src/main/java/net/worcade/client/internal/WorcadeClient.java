@@ -5,6 +5,7 @@
 package net.worcade.client.internal;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.net.HttpHeaders;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
@@ -218,6 +219,23 @@ public abstract class WorcadeClient implements Worcade {
         applicationHeader = null;
         userHeader = null;
         return result;
+    }
+
+    @Override
+    public Result<?> invalidateCurrentApiKey() {
+        if (applicationHeader != null && applicationHeader.startsWith("APIKEY")) {
+            Result<IncomingDto> result = getAuthentication().flatMap(auth -> delete(PUBLIC_API + "application/" + auth.getApplication().getId() + "/apikey"));
+            applicationHeader = null;
+            userHeader = null;
+            return result;
+        }
+        if (userHeader != null && userHeader.startsWith("APIKEY")) {
+            Result<IncomingDto> result = getAuthentication().flatMap(auth -> delete(PUBLIC_API + "user/" + auth.getUser().getId() + "/apikey"));
+            applicationHeader = null;
+            userHeader = null;
+            return result;
+        }
+        return Result.failed(ImmutableList.of(new Result.Message(null, "No active API key")));
     }
 
     @VisibleForTesting

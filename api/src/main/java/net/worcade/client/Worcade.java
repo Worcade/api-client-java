@@ -107,6 +107,8 @@ public interface Worcade {
      */
     Result<Boolean> probeUserTrust(String userId, String applicationId);
 
+    Result<?> invalidateCurrentApiKey();
+
     /**
      * Get information about the currently authenticated application and/or user, and the company and groups they are members of
      */
