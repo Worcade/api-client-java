@@ -8,7 +8,8 @@ import java.time.Instant;
 import java.util.Collection;
 
 public interface Entity extends Reference {
-    Collection<? extends RemoteId> getRemoteIds();
+    @Deprecated Collection<? extends RemoteId> getRemoteIds();
+    Collection<? extends OptionalField> getOptionalFields();
     Collection<? extends ReferenceWithName> getOwners();
     Instant created();
     ReferenceWithName createdBy();

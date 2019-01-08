@@ -316,6 +316,22 @@ class WorcadeApi implements ApplicationApi, AssetApi, AttachmentApi, ChecklistAp
     }
 
     @Override
+    public Result<? extends Collection<? extends RemoteIdSearchResult>> searchByOptionalField(String ownerId, String name, String value) {
+        if (Strings.isNullOrEmpty(ownerId)) {
+            return worcadeClient.getList(entityUrl + "/optionalField");
+        }
+        if (Strings.isNullOrEmpty(name)) {
+            return worcadeClient.getList(entityUrl + "/optionalField?ownerId=" + WorcadeClient.checkId(ownerId));
+        }
+        if (Strings.isNullOrEmpty(value)) {
+            return worcadeClient.getList(entityUrl + "/optionalField?ownerId=" + WorcadeClient.checkId(ownerId) +
+                    "&name=" + Util.escapeUrlQueryParameter(name));
+        }
+        return worcadeClient.getList(entityUrl + "/optionalField?ownerId=" + WorcadeClient.checkId(ownerId) +
+                "&name=" + Util.escapeUrlQueryParameter(name) + "&value=" + Util.escapeUrlQueryParameter(value));
+    }
+
+    @Override
     public Result<PublicKey> setupKeyExchange(String id, PublicKey applicationKey) {
         return Util.getPublicKeySpec(applicationKey)
                 .flatMap(s -> worcadeClient.post(entityUrl + "/" + WorcadeClient.checkId(id) + "/authentication",

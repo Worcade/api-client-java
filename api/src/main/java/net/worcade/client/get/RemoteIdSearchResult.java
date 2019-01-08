@@ -7,5 +7,6 @@ package net.worcade.client.get;
 import java.util.Collection;
 
 public interface RemoteIdSearchResult extends ReferenceWithName {
-    Collection<? extends RemoteId> getRemoteIds();
+    @Deprecated Collection<? extends RemoteId> getRemoteIds();
+    Collection<? extends OptionalField> getOptionalFields();
 }

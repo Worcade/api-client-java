@@ -304,6 +304,11 @@ public class IncomingDto implements ApplicationProfile, Asset, Attachment, Check
     }
 
     @Override
+    public Collection<? extends OptionalField> getOptionalFields() {
+        return getListOfDtos("optionalFields");
+    }
+
+    @Override
     public boolean hasPassword() {
         return getBoolean("hasPassword");
     }
