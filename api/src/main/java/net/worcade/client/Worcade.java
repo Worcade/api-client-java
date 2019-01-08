@@ -25,6 +25,7 @@ import net.worcade.client.api.mixin.RemoteIdsApi;
 import net.worcade.client.get.Authentication;
 import net.worcade.client.get.ExternalNumber;
 import net.worcade.client.get.Notification;
+import net.worcade.client.get.OptionalField;
 import net.worcade.client.get.Reference;
 import net.worcade.client.get.ReferenceWithName;
 import net.worcade.client.get.RemoteId;
@@ -50,7 +51,7 @@ public interface Worcade {
      * The minimal Worcade API version for this version of the client library.
      * The library is compatible with all later minor and patch versions, but not with later major versions.
      */
-    Version VERSION = new Version(2,13,0);
+    Version VERSION = new Version(2,15,0);
 
     /**
      * Creates a {@link WorcadeBuilder} instance from a registered service provider.
@@ -119,7 +120,9 @@ public interface Worcade {
     /**
      * Create a remote id object for use with {@link RemoteIdsApi} methods
      */
+    @Deprecated
     RemoteId createRemoteId(String remoteIdType, String remoteId);
+    OptionalField createOptionalField(String name, String value, Reference owner);
     ExternalNumber createExternalNumber(String number, String description);
     Webhook.Header createWebhookHeader(String name, String value);
     WorkOrder.Row createWorkOrderRow(String name, Duration duration, Double cost, Currency currency);

@@ -37,6 +37,7 @@ import net.worcade.client.get.Conversation;
 import net.worcade.client.get.CreateWithApiKey;
 import net.worcade.client.get.ExternalNumber;
 import net.worcade.client.get.Group;
+import net.worcade.client.get.OptionalField;
 import net.worcade.client.get.Reference;
 import net.worcade.client.get.ReferenceWithName;
 import net.worcade.client.get.ReferenceWithNumber;
@@ -281,6 +282,21 @@ class WorcadeApi implements ApplicationApi, AssetApi, AttachmentApi, ChecklistAp
     @Override
     public Result<?> removeRemoteIds(String id, RemoteId... remoteIds) {
         return worcadeClient.delete(entityUrl + "/" + WorcadeClient.checkId(id) + "/remoteIds", Modification.cleanRemoteIds(remoteIds));
+    }
+
+    @Override
+    public Result<? extends Collection<? extends OptionalField>> getOptionalFields(String id) {
+        return worcadeClient.getList(entityUrl + "/" + WorcadeClient.checkId(id) + "/optionalFields");
+    }
+
+    @Override
+    public Result<?> addOptionalFields(String id, OptionalField... optionalFields) {
+        return worcadeClient.post(entityUrl + "/" + WorcadeClient.checkId(id) + "/optionalFields", Modification.cleanOptionalFields(optionalFields));
+    }
+
+    @Override
+    public Result<?> removeOptionalFields(String id, OptionalField... optionalFields) {
+        return worcadeClient.delete(entityUrl + "/" + WorcadeClient.checkId(id) + "/optionalFields", Modification.cleanOptionalFields(optionalFields));
     }
 
     @Override

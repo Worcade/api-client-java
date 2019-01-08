@@ -29,6 +29,7 @@ import net.worcade.client.get.GroupProfile;
 import net.worcade.client.get.Label;
 import net.worcade.client.get.Markup;
 import net.worcade.client.get.Notification;
+import net.worcade.client.get.OptionalField;
 import net.worcade.client.get.Reference;
 import net.worcade.client.get.ReferenceWithName;
 import net.worcade.client.get.ReferenceWithNumber;
@@ -56,7 +57,7 @@ import java.util.Objects;
 @ToString
 public class IncomingDto implements ApplicationProfile, Asset, Attachment, Checklist, CompanyProfile, Contact, Conversation, GroupProfile, Label,
         Room, Site, UserProfile, Webhook, WorkOrder,
-        ApiKey, Site.Coordinates, RemoteId, RemoteIdSearchResult, ExternalNumber, ConversationContent, ConversationEvent, Markup, View,
+        ApiKey, Site.Coordinates, OptionalField, RemoteId, RemoteIdSearchResult, ExternalNumber, ConversationContent, ConversationEvent, Markup, View,
         Webhook.Header, Webhook.Log, WebhookTestResult, ReferenceWithNumber, Notification, Notification.Tracking,
         WorkOrder.Row, Checklist.Row, Email, SamlSettings, Authentication {
     static IncomingDto of(Map<String, Object> data) {
@@ -687,6 +688,11 @@ public class IncomingDto implements ApplicationProfile, Asset, Attachment, Check
     @Override
     public Collection<String> getVersions() {
         return getList("versions");
+    }
+
+    @Override
+    public Reference getOwner() {
+        return getDto("owner");
     }
 
     private <T> T get(String key, Class<T> type, boolean allowNull) {

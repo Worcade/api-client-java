@@ -22,6 +22,7 @@ import net.worcade.client.create.UserCreate;
 import net.worcade.client.create.WebhookCreate;
 import net.worcade.client.create.WorkOrderCreate;
 import net.worcade.client.get.ExternalNumber;
+import net.worcade.client.get.OptionalField;
 import net.worcade.client.get.Reference;
 import net.worcade.client.get.RemoteId;
 import net.worcade.client.get.Webhook;
@@ -93,6 +94,14 @@ class Modification implements ApplicationCreate, AssetCreate, CompanyCreate, Con
     static List<Map<String, String>> cleanRemoteIds(RemoteId... remoteIds) {
         return Stream.of(remoteIds)
                 .map(r -> ImmutableMap.of("remoteIdType", r.getRemoteIdType(), "remoteId", r.getRemoteId()))
+                .collect(ImmutableList.toImmutableList());
+    }
+
+    static List<Map<String, Object>> cleanOptionalFields(OptionalField... optionalFields) {
+        return Stream.of(optionalFields)
+                .map(r -> r.getOwner() == null
+                        ? ImmutableMap.<String, Object>of("name", r.getName(), "value", r.getValue())
+                        : ImmutableMap.of("name", r.getName(), "value", r.getValue(), "owner", cleanReference(r.getOwner())))
                 .collect(ImmutableList.toImmutableList());
     }
 

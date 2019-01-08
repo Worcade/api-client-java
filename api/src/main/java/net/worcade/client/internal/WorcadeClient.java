@@ -37,6 +37,7 @@ import net.worcade.client.get.Authentication;
 import net.worcade.client.get.BinaryData;
 import net.worcade.client.get.ExternalNumber;
 import net.worcade.client.get.Notification;
+import net.worcade.client.get.OptionalField;
 import net.worcade.client.get.Reference;
 import net.worcade.client.get.ReferenceWithName;
 import net.worcade.client.get.RemoteId;
@@ -261,6 +262,14 @@ public abstract class WorcadeClient implements Worcade {
     @Override
     public RemoteId createRemoteId(String remoteIdType, String remoteId) {
         return IncomingDto.of(ImmutableMap.of("remoteIdType", remoteIdType, "remoteId", remoteId));
+    }
+
+    @Override
+    public OptionalField createOptionalField(String name, String value, Reference owner) {
+        if (owner == null) {
+            return IncomingDto.of(ImmutableMap.of("name", name, "value", value));
+        }
+        return IncomingDto.of(ImmutableMap.of("name", name, "value", value, "owner", Modification.cleanReference(owner)));
     }
 
     @Override
