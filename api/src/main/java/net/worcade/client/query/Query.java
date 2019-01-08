@@ -21,6 +21,10 @@ public interface Query<T extends EntityField> {
         return WorcadeQuery.builder();
     }
 
+    static Builder<LabelField> label() {
+        return WorcadeQuery.builder();
+    }
+
     static Builder<RoomField> room() {
         return WorcadeQuery.builder();
     }
@@ -71,6 +75,11 @@ public interface Query<T extends EntityField> {
          * Defaults to 10. Cannot exceed 100.
          */
         Builder<T> limit(int limit);
+
+        /**
+         * Text to search for
+         */
+        Builder<T> search(String search);
 
         Query<T> build();
     }
