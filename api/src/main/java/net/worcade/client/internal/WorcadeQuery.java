@@ -4,6 +4,7 @@
 
 package net.worcade.client.internal;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
@@ -27,6 +28,7 @@ public class WorcadeQuery<T extends EntityField> implements Query<T> {
     private final Multimap<EntityField, String> filter;
     private final List<Order> order;
     private final int limit;
+    private final String search;
 
     String toQueryString() {
         StringBuilder sb = new StringBuilder("?limit=" + limit);
@@ -39,6 +41,9 @@ public class WorcadeQuery<T extends EntityField> implements Query<T> {
         for (Order o : order) {
             sb.append("&order=").append(o.ascending ? "" : "-").append(o.field.name());
         }
+        if (!Strings.isNullOrEmpty(search)) {
+            sb.append("&search=").append(Util.escapeUrlQueryParameter(search));
+        }
         return sb.toString();
     }
 
@@ -46,11 +51,12 @@ public class WorcadeQuery<T extends EntityField> implements Query<T> {
         return new Builder<>();
     }
 
-    static class Builder<T extends Enum<T> & EntityField> implements Query.Builder<T> {
-        final Set<EntityField> fields = Sets.newHashSet();
-        final ImmutableMultimap.Builder<EntityField, String> filter = ImmutableMultimap.builder();
-        final ImmutableList.Builder<Order> order = ImmutableList.builder();
-        int limit = 10;
+    private static class Builder<T extends Enum<T> & EntityField> implements Query.Builder<T> {
+        private final Set<EntityField> fields = Sets.newHashSet();
+        private final ImmutableMultimap.Builder<EntityField, String> filter = ImmutableMultimap.builder();
+        private final ImmutableList.Builder<Order> order = ImmutableList.builder();
+        private int limit = 10;
+        private String search;
 
         @Override
         @SafeVarargs
@@ -84,8 +90,15 @@ public class WorcadeQuery<T extends EntityField> implements Query<T> {
         }
 
         @Override
+        public Builder<T> search(String search) {
+            this.search = search;
+            return this;
+        }
+
+
+        @Override
         public WorcadeQuery<T> build() {
-            return new WorcadeQuery<>(ImmutableSet.copyOf(fields), filter.build(), order.build(), limit);
+            return new WorcadeQuery<>(ImmutableSet.copyOf(fields), filter.build(), order.build(), limit, search);
         }
     }
 
