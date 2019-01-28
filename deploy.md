@@ -7,3 +7,4 @@
 1. Go to https://oss.sonatype.org/#stagingRepositories and find the networcade repository (on the bottom)
 1. Close the repo and wait until the Activity tab shows "Repository closed"
 1. Release the artifacts
+1. Wait. Could be less than a minute, could be more than an hour.

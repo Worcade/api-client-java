@@ -672,6 +672,16 @@ class WorcadeApi implements ApplicationApi, AssetApi, AttachmentApi, ChecklistAp
                 ImmutableMap.of("text", message));
     }
 
+    @Override
+    public Result<? extends Collection<? extends Reference>> searchText(String query) {
+        return worcadeClient.getList(entityUrl + "/text?search=" + Util.escapeUrlQueryParameter(query));
+    }
+
+    @Override
+    public Result<? extends Collection<? extends Reference>> searchPrefix(String query) {
+        return worcadeClient.getList(entityUrl + "/prefix?search=" + Util.escapeUrlQueryParameter(query));
+    }
+
     private Result<IncomingDto> createInternal(EntityModification subject) {
         return worcadeClient.post(entityUrl, ((Modification) subject).getData());
     }
