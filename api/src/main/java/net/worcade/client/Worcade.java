@@ -51,7 +51,7 @@ public interface Worcade {
      * The minimal Worcade API version for this version of the client library.
      * The library is compatible with all later minor and patch versions, but not with later major versions.
      */
-    Version VERSION = new Version(2,16,0);
+    Version VERSION = new Version(2,16,2);
 
     /**
      * Creates a {@link WorcadeBuilder} instance from a registered service provider.

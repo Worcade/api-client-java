@@ -226,6 +226,15 @@ class WorcadeApi implements ApplicationApi, AssetApi, AttachmentApi, ChecklistAp
 
     @Override
     public Result<CreateWithApiKey> createWithApiKey(ApplicationModification subject, String apiKeyDescription) {
+        return createWithApiKeyInternal(subject, apiKeyDescription);
+    }
+
+    @Override
+    public Result<CreateWithApiKey> createWithApiKey(UserModification subject, String apiKeyDescription) {
+        return createWithApiKeyInternal(subject, apiKeyDescription);
+    }
+
+    private Result<CreateWithApiKey> createWithApiKeyInternal(EntityModification subject, String apiKeyDescription) {
         Result<IncomingDto> result = worcadeClient.post(entityUrl + "?apiKeyDescription=" + Util.escapeUrlQueryParameter(apiKeyDescription), ((Modification) subject).getData());
         return result.map(d -> {
             Iterable<Result.Message> messages = Iterables.filter(result.getMessages(),
