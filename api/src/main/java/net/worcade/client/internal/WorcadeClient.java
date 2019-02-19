@@ -35,6 +35,7 @@ import net.worcade.client.exception.IncompatibleVersionException;
 import net.worcade.client.exception.InvalidIdException;
 import net.worcade.client.get.Authentication;
 import net.worcade.client.get.BinaryData;
+import net.worcade.client.get.Checklist;
 import net.worcade.client.get.ExternalNumber;
 import net.worcade.client.get.Notification;
 import net.worcade.client.get.OptionalField;
@@ -280,6 +281,11 @@ public abstract class WorcadeClient implements Worcade {
     @Override
     public Webhook.Header createWebhookHeader(String name, String value) {
         return IncomingDto.of(ImmutableMap.of("name", name, "value", value));
+    }
+
+    @Override
+    public Checklist.Row createChecklistRow(String name) {
+        return IncomingDto.of(ImmutableMap.of("name", name));
     }
 
     @Override

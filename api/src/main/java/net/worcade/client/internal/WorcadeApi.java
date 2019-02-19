@@ -27,11 +27,13 @@ import net.worcade.client.api.SiteApi;
 import net.worcade.client.api.UserApi;
 import net.worcade.client.api.WebhookApi;
 import net.worcade.client.api.WorkOrderApi;
+import net.worcade.client.create.ChecklistCreate;
 import net.worcade.client.create.WebhookCreate;
 import net.worcade.client.create.WorkOrderCreate;
 import net.worcade.client.get.ApiKey;
 import net.worcade.client.get.Asset;
 import net.worcade.client.get.BinaryData;
+import net.worcade.client.get.Checklist;
 import net.worcade.client.get.Contact;
 import net.worcade.client.get.Conversation;
 import net.worcade.client.get.CreateWithApiKey;
@@ -50,6 +52,8 @@ import net.worcade.client.get.WebhookTestResult;
 import net.worcade.client.get.WorkOrder;
 import net.worcade.client.modify.ApplicationModification;
 import net.worcade.client.modify.AssetModification;
+import net.worcade.client.modify.ChecklistModification;
+import net.worcade.client.modify.ChecklistRowModification;
 import net.worcade.client.modify.CompanyModification;
 import net.worcade.client.modify.ConversationModification;
 import net.worcade.client.modify.EntityModification;
@@ -164,13 +168,34 @@ class WorcadeApi implements ApplicationApi, AssetApi, AttachmentApi, ChecklistAp
     }
 
     @Override
-    public Result<? extends Reference> create(String conversationId, WorkOrderCreate subject) {
-        return worcadeClient.post(WorcadeClient.PUBLIC_API + "conversation/" + WorcadeClient.checkId(conversationId) + "/content/workorder",
+    public Result<? extends Reference> addWorkOrder(String id, WorkOrderCreate subject) {
+        return worcadeClient.post(WorcadeClient.PUBLIC_API + "conversation/" + WorcadeClient.checkId(id) + "/content/workorder",
                 ((Modification) subject).getData());
     }
 
     @Override
+    public Result<? extends Reference> create(String conversationId, WorkOrderCreate subject) {
+        return addWorkOrder(conversationId, subject);
+    }
+
+    @Override
+    public Result<? extends Reference> addChecklist(String id, ChecklistCreate subject) {
+        return worcadeClient.post(WorcadeClient.PUBLIC_API + "conversation/" + WorcadeClient.checkId(id) + "/content/checklist",
+                ((Modification) subject).getData());
+    }
+
+    @Override
+    public Result<? extends Reference> create(String conversationId, ChecklistCreate subject) {
+        return addChecklist(conversationId, subject);
+    }
+
+    @Override
     public Result<?> update(AssetModification subject) {
+        return updateInternal(subject, "", true);
+    }
+
+    @Override
+    public Result<?> update(ChecklistModification subject) {
         return updateInternal(subject, "", true);
     }
 
@@ -483,12 +508,7 @@ class WorcadeApi implements ApplicationApi, AssetApi, AttachmentApi, ChecklistAp
     }
 
     @Override
-    public Result<?> confirmEmailAddress(String id, String secret) {
-        return worcadeClient.post(entityUrl + "/" + WorcadeClient.checkId(id) + "/confirmEmail", null, new Header("Worcade-Secret", secret));
-    }
-
-    @Override
-    public Result<?> requestEmailConfirm(String id, String email) {
+    public Result<?> reRequestEmailConfirmation(String id, String email) {
         return worcadeClient.post(entityUrl + "/" + WorcadeClient.checkId(id) + "/requestEmailConfirm", ImmutableMap.of("email", email));
     }
 
@@ -505,11 +525,6 @@ class WorcadeApi implements ApplicationApi, AssetApi, AttachmentApi, ChecklistAp
     @Override
     public Result<?> removeMembers(String id, Reference... members) {
         return worcadeClient.delete(entityUrl + "/" + WorcadeClient.checkId(id) + "/members", Modification.cleanReferences(members));
-    }
-
-    @Override
-    public Result<? extends ReferenceWithName> searchByDomain(String domain) {
-        return worcadeClient.get(entityUrl + "/domain?domain=" + Util.escapeUrlQueryParameter(domain));
     }
 
     @Override
@@ -550,21 +565,8 @@ class WorcadeApi implements ApplicationApi, AssetApi, AttachmentApi, ChecklistAp
     }
 
     @Override
-    public Result<?> confirmPasswordReset(String id, String newPassword, String secret) {
-        return worcadeClient.put(entityUrl + "/" + WorcadeClient.checkId(id) + "/password",
-                ImmutableMap.of("password", Util.encodeBase64(newPassword)),
-                new Header("Worcade-Secret", secret));
-    }
-
-    @Override
     public Result<?> requestApplicationTrust(String userId, String applicationId) {
         return worcadeClient.post(entityUrl + "/" + WorcadeClient.checkId(userId) + "/trust/" + WorcadeClient.checkId(applicationId), null);
-    }
-
-    @Override
-    public Result<?> confirmApplicationTrust(String userId, String secret) {
-        return worcadeClient.post(entityUrl + "/" + WorcadeClient.checkId(userId) + "/trustedApplication", null,
-                new Header("Worcade-Secret", secret));
     }
 
     @Override
@@ -574,13 +576,8 @@ class WorcadeApi implements ApplicationApi, AssetApi, AttachmentApi, ChecklistAp
     }
 
     @Override
-    public Result<?> requestSubscription(String id) {
-        return worcadeClient.post(entityUrl + "/" + WorcadeClient.checkId(id) + "/mailinglist", null);
-    }
-
-    @Override
     public Result<?> addRows(String id, WorkOrder.Row... rows) {
-        return worcadeClient.post(entityUrl + "/" + WorcadeClient.checkId(id) + "/row", Modification.cleanRows(rows));
+        return worcadeClient.post(entityUrl + "/" + WorcadeClient.checkId(id) + "/row", Modification.cleanWorkOrderRows(rows));
     }
 
     @Override
@@ -671,11 +668,6 @@ class WorcadeApi implements ApplicationApi, AssetApi, AttachmentApi, ChecklistAp
     }
 
     @Override
-    public Result<?> confirmJoinCompany(String userId, String secret) {
-        return worcadeClient.post(entityUrl + "/" + WorcadeClient.checkId(userId) + "/acceptInvite", null, new Header("Worcade-Secret", secret));
-    }
-
-    @Override
     public Result<?> editMessage(String conversationId, String messageId, String message) {
         return worcadeClient.put(entityUrl + "/" + WorcadeClient.checkId(conversationId) + "/message/" + WorcadeClient.checkId(messageId),
                 ImmutableMap.of("text", message));
@@ -689,6 +681,33 @@ class WorcadeApi implements ApplicationApi, AssetApi, AttachmentApi, ChecklistAp
     @Override
     public Result<? extends Collection<? extends Reference>> searchPrefix(String query) {
         return worcadeClient.getList(entityUrl + "/prefix?search=" + Util.escapeUrlQueryParameter(query));
+    }
+
+    @Override
+    public Result<?> addRows(String id, Checklist.Row... rows) {
+        return worcadeClient.post(entityUrl + "/" + WorcadeClient.checkId(id) + "/row", Modification.cleanChecklistRows(rows));
+    }
+
+    @Override
+    public Result<?> updateRow(String checklistId, ChecklistRowModification subject) {
+        Modification modification = ((Modification) subject);
+        String id = (String) modification.getData().get("id");
+        return worcadeClient.put(entityUrl + "/" + WorcadeClient.checkId(checklistId) + "/row/" + WorcadeClient.checkId(id), ((Modification) subject).getData());
+    }
+
+    @Override
+    public Result<?> addAutoShareTargets(String companyId, Reference... targets) {
+        return worcadeClient.post(entityUrl + "/" + WorcadeClient.checkId(companyId) + "/autoShareTargets", Modification.cleanReferences(targets));
+    }
+
+    @Override
+    public Result<?> removeAutoShareTargets(String companyId, Reference... targets) {
+        return worcadeClient.delete(entityUrl + "/" + WorcadeClient.checkId(companyId) + "/autoShareTargets", Modification.cleanReferences(targets));
+    }
+
+    @Override
+    public Result<?> addInvolvedCompanies(String id, Reference... companies) {
+        return worcadeClient.post(entityUrl + "/" + WorcadeClient.checkId(id) + "/involvedCompanies", Modification.cleanReferences(companies));
     }
 
     private Result<IncomingDto> createInternal(EntityModification subject) {

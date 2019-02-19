@@ -23,6 +23,7 @@ import net.worcade.client.api.WebhookApi;
 import net.worcade.client.api.WorkOrderApi;
 import net.worcade.client.api.mixin.RemoteIdsApi;
 import net.worcade.client.get.Authentication;
+import net.worcade.client.get.Checklist;
 import net.worcade.client.get.ExternalNumber;
 import net.worcade.client.get.Notification;
 import net.worcade.client.get.OptionalField;
@@ -125,6 +126,7 @@ public interface Worcade {
     OptionalField createOptionalField(String name, String value, Reference owner);
     ExternalNumber createExternalNumber(String number, String description);
     Webhook.Header createWebhookHeader(String name, String value);
+    Checklist.Row createChecklistRow(String name);
     WorkOrder.Row createWorkOrderRow(String name, Duration duration, Double cost, Currency currency);
 
     ApplicationApi getApplicationApi();

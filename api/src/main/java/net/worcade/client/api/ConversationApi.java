@@ -7,7 +7,9 @@ package net.worcade.client.api;
 import net.worcade.client.Result;
 import net.worcade.client.api.mixin.LabelsApi;
 import net.worcade.client.api.mixin.RemoteIdsApi;
+import net.worcade.client.create.ChecklistCreate;
 import net.worcade.client.create.ConversationCreate;
+import net.worcade.client.create.WorkOrderCreate;
 import net.worcade.client.get.Conversation;
 import net.worcade.client.get.ExternalNumber;
 import net.worcade.client.get.Reference;
@@ -37,12 +39,14 @@ public interface ConversationApi extends LabelsApi, RemoteIdsApi {
     Result<?> editMessage(String conversationId, String messageId, String message);
     Result<?> addHtmlMessage(String id, String message);
     Result<?> addContent(String id, Reference... content);
-//    Result<?> addWorkOrder(String id, WorkOrderCreate workOrder);
+    Result<? extends Reference> addWorkOrder(String id, WorkOrderCreate workOrder);
+    Result<? extends Reference> addChecklist(String id, ChecklistCreate checklist);
     Result<?> addEvaluation(String id, int rating);
 
     Result<?> addExternalNumbers(String id, ExternalNumber... numbers);
     Result<?> linkConversations(String firstId, String secondId);
 
+    Result<?> addInvolvedCompanies(String id, Reference... companies);
     Result<?> addWatchers(String id, Reference... watchers);
     Result<?> removeWatchers(String id, Reference... watchers);
 

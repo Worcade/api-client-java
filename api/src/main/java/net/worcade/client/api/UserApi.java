@@ -6,6 +6,7 @@ package net.worcade.client.api;
 
 import net.worcade.client.Result;
 import net.worcade.client.api.mixin.ApiKeysApi;
+import net.worcade.client.api.mixin.EmailAddressApi;
 import net.worcade.client.api.mixin.RemoteIdsApi;
 import net.worcade.client.create.UserCreate;
 import net.worcade.client.get.CreateWithApiKey;
@@ -14,9 +15,7 @@ import net.worcade.client.get.User;
 import net.worcade.client.get.UserProfile;
 import net.worcade.client.modify.UserModification;
 
-import java.util.Collection;
-
-public interface UserApi extends ApiKeysApi, RemoteIdsApi {
+public interface UserApi extends ApiKeysApi, EmailAddressApi, RemoteIdsApi {
     UserCreate createBuilder();
 
     Result<? extends User> get(String id);
@@ -29,22 +28,10 @@ public interface UserApi extends ApiKeysApi, RemoteIdsApi {
     Result<?> updateProfile(UserModification subject);
     Result<?> cancelAccount(String id, String password);
 
-    Result<?> addEmailAddress(String id, String... emails);
-    Result<?> removeEmailAddress(String id, String... emails);
-    Result<?> confirmEmailAddress(String id, String secret);
-    Result<?> requestEmailConfirm(String id, String email);
-    Result<? extends Collection<? extends Reference>> searchByEmail(String email);
-
     Result<?> changePassword(String id, String currentPassword, String newPassword);
     Result<?> requestPasswordReset(String id);
     Result<?> requestPasswordResetByEmail(String email);
-    Result<?> confirmPasswordReset(String id, String newPassword, String secret);
 
     Result<?> requestApplicationTrust(String userId, String applicationId);
-    Result<?> confirmApplicationTrust(String userId, String applicationId);
     Result<?> unlinkApplication(String userId, String applicationId);
-
-    Result<?> confirmJoinCompany(String id, String secret);
-
-    Result<?> requestSubscription(String id);
 }

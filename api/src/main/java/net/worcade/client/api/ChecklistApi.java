@@ -6,26 +6,23 @@ package net.worcade.client.api;
 
 import net.worcade.client.Result;
 import net.worcade.client.api.mixin.RemoteIdsApi;
-import net.worcade.client.create.WorkOrderCreate;
+import net.worcade.client.create.ChecklistCreate;
+import net.worcade.client.get.Checklist;
 import net.worcade.client.get.Reference;
-import net.worcade.client.get.WorkOrder;
-import net.worcade.client.modify.WorkOrderModification;
-import net.worcade.client.modify.WorkOrderRowModification;
+import net.worcade.client.modify.ChecklistModification;
+import net.worcade.client.modify.ChecklistRowModification;
 
 import java.util.Collection;
 
 public interface ChecklistApi extends RemoteIdsApi {
-    WorkOrderCreate createBuilder();
+    ChecklistCreate createBuilder();
 
-    Result<? extends WorkOrder> get(String id);
-    Result<?> update(WorkOrderModification subject);
-    /**
-     * Create a new Work order in the given conversation. Use the {@link #createBuilder()} method for a new, empty template.
-     */
-    Result<? extends Reference> create(String conversationId, WorkOrderCreate subject);
+    Result<? extends Checklist> get(String id);
+    Result<?> update(ChecklistModification subject);
+    Result<? extends Reference> create(String conversationId, ChecklistCreate subject);
 
-    Result<?> addRows(String id, WorkOrder.Row... rows);
-    Result<?> updateRow(String workOrderId, WorkOrderRowModification subject);
+    Result<?> addRows(String id, Checklist.Row... rows);
+    Result<?> updateRow(String checklistId, ChecklistRowModification subject);
     Result<?> removeRows(String id, String... rowIdsToRemove);
     Result<?> removeRows(String id, Collection<String> rowIdsToRemove);
 }

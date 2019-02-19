@@ -5,20 +5,20 @@
 package net.worcade.client.api;
 
 import net.worcade.client.Result;
+import net.worcade.client.api.mixin.EmailAddressApi;
 import net.worcade.client.api.mixin.OwnerApi;
 import net.worcade.client.api.mixin.RemoteIdsApi;
 import net.worcade.client.create.GroupCreate;
 import net.worcade.client.get.Group;
 import net.worcade.client.get.GroupProfile;
 import net.worcade.client.get.Reference;
-import net.worcade.client.get.ReferenceWithName;
 import net.worcade.client.modify.GroupModification;
 import net.worcade.client.query.GroupField;
 import net.worcade.client.query.Query;
 
 import java.util.Collection;
 
-public interface GroupApi extends OwnerApi, RemoteIdsApi {
+public interface GroupApi extends EmailAddressApi, OwnerApi, RemoteIdsApi {
     GroupCreate createBuilder();
 
     Result<? extends Group> get(String id);
@@ -36,16 +36,7 @@ public interface GroupApi extends OwnerApi, RemoteIdsApi {
      */
     Result<? extends Collection<? extends Group>> getGroupList(Query<GroupField> query);
 
-    Result<?> addEmailAddress(String id, String... emails);
-    Result<?> removeEmailAddress(String id, String... emails);
-    Result<?> confirmEmailAddress(String id, String secret);
-    Result<? extends Collection<? extends ReferenceWithName>> searchByEmail(String email);
-
     Result<?> addMembers(String id, Reference... members);
     Result<?> addMembers(String id, Collection<? extends Reference> members);
     Result<?> removeMembers(String id, Reference... members);
-
-    Result<? extends ReferenceWithName> searchByDomain(String domain);
-    Result<?> addDomains(String id, String... domains);
-    Result<?> removeDomains(String id, String... domains);
 }

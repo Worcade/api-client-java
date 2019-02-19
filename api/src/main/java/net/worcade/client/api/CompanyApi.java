@@ -38,6 +38,9 @@ public interface CompanyApi extends OwnerApi, RemoteIdsApi {
     Result<?> addDomains(String companyId, String... domains);
     Result<?> removeDomains(String companyId, String... domains);
 
+    Result<?> addAutoShareTargets(String companyId, Reference... targets);
+    Result<?> removeAutoShareTargets(String companyId, Reference... targets);
+
     Result<? extends SamlSettings> getSamlSettings(String companyId);
     Result<?> setSamlSettings(String companyId, String entityId, String ssoServiceUrl, String certificate, @Nullable String attributeName, boolean allowCreate);
     Result<?> setSamlSettings(String companyId, String entityId, String metadataUrl, @Nullable String attributeName, boolean allowCreate);

@@ -60,7 +60,7 @@ public class IncomingDto implements ApplicationProfile, Asset, Attachment, Check
         ApiKey, Site.Coordinates, OptionalField, RemoteId, RemoteIdSearchResult, ExternalNumber, ConversationContent, ConversationEvent, Markup, View,
         Webhook.Header, Webhook.Log, WebhookTestResult, ReferenceWithNumber, Notification, Notification.Tracking,
         WorkOrder.Row, Checklist.Row, Email, SamlSettings, Authentication {
-    static IncomingDto of(Map<String, Object> data) {
+    public static IncomingDto of(Map<String, Object> data) {
         return data == null ? null : new IncomingDto(data);
     }
 

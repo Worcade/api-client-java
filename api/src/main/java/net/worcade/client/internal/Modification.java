@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.ToString;
 import net.worcade.client.create.ApplicationCreate;
 import net.worcade.client.create.AssetCreate;
+import net.worcade.client.create.ChecklistCreate;
 import net.worcade.client.create.CompanyCreate;
 import net.worcade.client.create.ConversationCreate;
 import net.worcade.client.create.GroupCreate;
@@ -21,12 +22,14 @@ import net.worcade.client.create.SiteCreate;
 import net.worcade.client.create.UserCreate;
 import net.worcade.client.create.WebhookCreate;
 import net.worcade.client.create.WorkOrderCreate;
+import net.worcade.client.get.Checklist;
 import net.worcade.client.get.ExternalNumber;
 import net.worcade.client.get.OptionalField;
 import net.worcade.client.get.Reference;
 import net.worcade.client.get.RemoteId;
 import net.worcade.client.get.Webhook;
 import net.worcade.client.get.WorkOrder;
+import net.worcade.client.modify.ChecklistRowModification;
 import net.worcade.client.modify.WorkOrderModification;
 import net.worcade.client.modify.WorkOrderRowModification;
 
@@ -39,7 +42,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 @ToString
-class Modification implements ApplicationCreate, AssetCreate, CompanyCreate, ConversationCreate, GroupCreate,
+class Modification implements ApplicationCreate, AssetCreate, ChecklistCreate, ChecklistRowModification, CompanyCreate, ConversationCreate, GroupCreate,
         LabelCreate, RoomCreate, SiteCreate, UserCreate, WebhookCreate, WorkOrderCreate, WorkOrderModification, WorkOrderRowModification {
     static Modification update(Map<String, Object> data) {
         return new Modification(data);
@@ -117,7 +120,13 @@ class Modification implements ApplicationCreate, AssetCreate, CompanyCreate, Con
                 .collect(ImmutableList.toImmutableList());
     }
 
-    static List<ImmutableMap<String, Object>> cleanRows(WorkOrder.Row... rows) {
+    static List<ImmutableMap<String, Object>> cleanWorkOrderRows(WorkOrder.Row... rows) {
+        return Stream.of(rows)
+                .map(r -> ((IncomingDto) r).getData())
+                .collect(ImmutableList.toImmutableList());
+    }
+
+    static List<ImmutableMap<String, Object>> cleanChecklistRows(Checklist.Row... rows) {
         return Stream.of(rows)
                 .map(r -> ((IncomingDto) r).getData())
                 .collect(ImmutableList.toImmutableList());
@@ -390,7 +399,7 @@ class Modification implements ApplicationCreate, AssetCreate, CompanyCreate, Con
 
     @Override
     public Modification rows(WorkOrder.Row... rows) {
-        return put("rows", cleanRows(rows));
+        return put("rows", cleanWorkOrderRows(rows));
     }
 
     @Override
@@ -431,5 +440,15 @@ class Modification implements ApplicationCreate, AssetCreate, CompanyCreate, Con
     @Override
     public Modification fingerprint(String fingerprint) {
         return put("fingerprint", fingerprint);
+    }
+
+    @Override
+    public Modification rows(Checklist.Row... rows) {
+        return put("rows", cleanChecklistRows(rows));
+    }
+
+    @Override
+    public ChecklistRowModification checked(boolean checked) {
+        return put("check", checked);
     }
 }
